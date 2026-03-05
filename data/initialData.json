@@ -1,0 +1,14 @@
+[
+    {"icon": "🚶", "title": "Walk"},
+    {"icon": "🛌🏼", "title": "Sleep"},
+    {"icon": "💧", "title": "Drink water"},
+    {"icon": "🧘🏼‍♀️", "title": "Meditation"},
+    {"icon": "🏃", "title": "Run"},
+    {"icon": "💪🏻", "title": "Workout"},
+    {"icon": "🧍🏼‍♂️", "title": "Stand"},
+    {"icon": "🚲", "title": "Cycling"},
+    {"icon": "📅", "title": "Plan the Day"},
+    {"icon": "📵", "title": "Limit Social Media"},
+    {"icon": "📖", "title": "Read a book"},
+    {"icon": "💻", "title": "Practice Coding"}
+]
