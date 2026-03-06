@@ -27,11 +27,13 @@
                     </div>
                 </button>
             </div>
-            <ColorSelectorModal 
-                v-if="toggleColor" 
-                @close-modal="toggleColor = false"
-                @selected-color="colorStore.setColor"
-            />
+            <Transition name="scale">
+                <ColorSelectorModal 
+                    v-if="toggleColor" 
+                    @close-modal="toggleColor = false"
+                    @selected-color="colorStore.setColor"
+                />
+            </Transition>
         </div>
     </div>
     <div v-else>
@@ -68,3 +70,30 @@ onMounted(() => {
 })
 
 </script>
+
+<style scoped>
+.scale-enter-active,
+.scale-leave-active {
+    transition: all 0.2s ease;
+}
+
+.scale-enter-from {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.scale-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.scale-enter-to {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.scale-leave-from {
+    opacity: 1;
+    transform: scale(1);
+}
+</style>
