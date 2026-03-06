@@ -6,7 +6,7 @@
         :key="link.name"
         class="hover:scale-110 transition-transform"
     >
-        <img :src="link.icon" :alt="link.name" class="size-10">
+        <component :is="link.icon" class="size-8 text-white"/>
     </RouterLink>
   </nav>
 </template>
@@ -14,11 +14,16 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 
+import HomeIcon from '@/assets/icons/HomeIcon.vue';
+import ListIcon from '@/assets/icons/ListIcon.vue';
+import CalendarIcon from '@/assets/icons/CalendarIcon.vue';
+import UserIcon from '@/assets/icons/UserIcon.vue';
+
 const links = [
-    {route: '/', name: 'home', icon: './src/assets/icons/home.svg'},
-    {route: '/habits', name: 'habits', icon: './src/assets/icons/habits.svg'},
-    {route: '/calendar', name: 'calendar', icon: './src/assets/icons/calendar.svg'},
-    {route: '/profile', name: 'profile', icon: './src/assets/icons/user.svg'},
+    {route: '/', name: 'home', icon: HomeIcon},
+    {route: '/habits', name: 'habits', icon: ListIcon},
+    {route: '/calendar', name: 'calendar', icon: CalendarIcon},
+    {route: '/profile', name: 'profile', icon: UserIcon},
 ]
 </script>
 

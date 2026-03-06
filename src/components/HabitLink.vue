@@ -5,12 +5,14 @@
                 <span class="text-2xl">{{ habit.icon }}</span>
                 <span class="text-white">{{ habit.title }}</span>
             </div>
-            <img src="/src/assets/icons/heart.svg" alt="like" class="size-6 text-white">
+            <component :is="HeartIcon" class="size-6 text-white"/>
         </div>
     </RouterLink>
 </template>
 
 <script setup>
+import HeartIcon from '@/assets/icons/HeartIcon.vue';
+
 const props = defineProps({
     habit: {
         type: Object,

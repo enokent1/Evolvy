@@ -1,4 +1,4 @@
-import { createMemoryHistory, createRouter } from "vue-router";
+import { createWebHistory, createRouter } from "vue-router";
 
 import HomePage from "@/pages/home/HomePage.vue";
 import HabitsPage from "@/pages/habits/HabitsPage.vue";
@@ -15,6 +15,6 @@ const routes = [
 ]
 
 export default createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes
 })

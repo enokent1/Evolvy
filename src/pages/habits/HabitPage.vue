@@ -1,15 +1,37 @@
 <template>
     <div v-if="habit">
         <div class="flex items-center gap-2 w-fit mx-auto mb-6">
-            <span class="text-3xl">{{ habit.icon }}</span>
+            <span class="text-2xl">{{ habit.icon }}</span>
             <h1 class="text-2xl font-medium">{{ habit.title }}</h1>
         </div>
-        <div class="flex gap-6 border rounded-3xl p-4 mx-auto w-fit">
-            <span class="text-5xl">{{ habit.icon }}</span>
-            <div>
-                <input type="text" v-model="habit.title">
-                <input type="text" v-model="habit.description" placeholder="Description (Optional)">
+        <div class="rounded-3xl p-4 mx-4 w-fit bg-gray-200">
+            <div class="pb-2 border-b border-gray-400 flex gap-6">
+                <div 
+                    class="w-25 aspect-square border-2 border-dashed bg-gray-300 rounded-lg flex items-center justify-center"
+                    :class="colorStore.borderClass"
+                >
+                    <span class="text-4xl">{{ habit.icon }}</span> 
+                </div>
+                <div>
+                    <input class="py-1 border-b border-gray-400 w-full" type="text" v-model="habit.title">
+                    <input class="py-1 w-full" type="text" v-model="habit.description" placeholder="Description (Optional)">
+                </div>
             </div>
+            <div class="flex justify-between py-2">
+                <span>Color</span>
+                <button @click="toggleColor = true">
+                    <div 
+                        class="w-10 h-5 rounded-full bg-amber-300" 
+                        :class=colorStore.bgClass
+                    >
+                    </div>
+                </button>
+            </div>
+            <ColorSelectorModal 
+                v-if="toggleColor" 
+                @close-modal="toggleColor = false"
+                @selected-color="colorStore.setColor"
+            />
         </div>
     </div>
     <div v-else>
@@ -18,12 +40,17 @@
 </template>
 
 <script setup>
+import ColorSelectorModal from '@/components/modals/ColorSelectorModal.vue';
+import { useColorStore } from '@/stores/colorStore';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
 const id = useRoute().params.id;
 const habit = ref(null)
+
+const toggleColor = ref(false)
+const colorStore = useColorStore();
 
 async function fetchHabitWithId(id) {
     try {
