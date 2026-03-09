@@ -17,7 +17,7 @@
                     <input class="py-1 w-full" type="text" v-model="habit.description" placeholder="Description (Optional)">
                 </div>
             </div>
-            <div class="flex justify-between py-2">
+            <div class="flex justify-between py-2 border-b border-gray-400">
                 <span>Color</span>
                 <button @click="toggleColor = true">
                     <div 
@@ -27,14 +27,29 @@
                     </div>
                 </button>
             </div>
-            <Transition name="scale">
-                <ColorSelectorModal 
-                    v-if="toggleColor" 
-                    @close-modal="toggleColor = false"
-                    @selected-color="colorStore.setColor"
-                />
-            </Transition>
+            <div class="flex justify-between py-2">
+                <span>Group</span>
+                <button @click="toggleGroup = true">
+                    {{ habit.group }}
+                </button>
+            </div>
         </div>
+        <Transition name="scale">
+            <ColorSelectorModal 
+                v-if="toggleColor" 
+                @close-modal="toggleColor = false"
+                @selected-color="colorStore.setColor"
+            />
+        </Transition>
+        <Transition name="scale">
+            <GroupSelectorModal 
+                v-if="toggleGroup" 
+                @close-modal="toggleGroup = false"
+                @selected-group="habit.group = $event"
+                :default-group="habit.group"
+                :color="colorStore.borderClass"
+            />
+        </Transition>
     </div>
     <div v-else>
         <p class="text-center text-gray-600">Loading...</p>
@@ -43,6 +58,7 @@
 
 <script setup>
 import ColorSelectorModal from '@/components/modals/ColorSelectorModal.vue';
+import GroupSelectorModal from '@/components/modals/GroupSelectorModal.vue';
 import { useColorStore } from '@/stores/colorStore';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
@@ -52,6 +68,8 @@ const id = useRoute().params.id;
 const habit = ref(null)
 
 const toggleColor = ref(false)
+const toggleGroup = ref(true)
+
 const colorStore = useColorStore();
 
 async function fetchHabitWithId(id) {

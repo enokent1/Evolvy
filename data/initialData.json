@@ -1,14 +1,14 @@
 [
-    {"icon": "🚶", "title": "Walk"},
-    {"icon": "🛌🏼", "title": "Sleep"},
-    {"icon": "💧", "title": "Drink water"},
-    {"icon": "🧘🏼‍♀️", "title": "Meditation"},
-    {"icon": "🏃", "title": "Run"},
-    {"icon": "💪🏻", "title": "Workout"},
-    {"icon": "🧍🏼‍♂️", "title": "Stand"},
-    {"icon": "🚲", "title": "Cycling"},
-    {"icon": "📅", "title": "Plan the Day"},
-    {"icon": "📵", "title": "Limit Social Media"},
-    {"icon": "📖", "title": "Read a book"},
-    {"icon": "💻", "title": "Practice Coding"}
+    {"icon": "🚶", "title": "Walk", "group": "Health"},
+    {"icon": "🛌🏼", "title": "Sleep", "group": "Health"},
+    {"icon": "💧", "title": "Drink water", "group": "Health"},
+    {"icon": "🧘🏼‍♀️", "title": "Meditation", "group": "Health"},
+    {"icon": "🏃", "title": "Run", "group": "Sport"},
+    {"icon": "💪🏻", "title": "Workout", "group": "Sport"},
+    {"icon": "🧍🏼‍♂️", "title": "Stand", "group": "Health"},
+    {"icon": "🚲", "title": "Cycling", "group": "Sport"},
+    {"icon": "📅", "title": "Plan the Day", "group": "Productivity"},
+    {"icon": "📵", "title": "Limit Social Media", "group": "Productivity"},
+    {"icon": "📖", "title": "Read a book", "group": "Productivity"},
+    {"icon": "💻", "title": "Practice Coding", "group": "Productivity"}
 ]
