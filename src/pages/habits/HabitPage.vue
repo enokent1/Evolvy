@@ -1,10 +1,14 @@
 <template>
-    <div v-if="habit">
-        <div class="flex items-center gap-2 w-fit mx-auto mb-6">
+    <div 
+        v-if="habit"
+        class="flex flex-col gap-6 p-5"
+    >
+        <div class="flex items-center gap-2 w-fit mx-auto mb-2">
             <span class="text-2xl">{{ habit.icon }}</span>
             <h1 class="text-2xl font-medium">{{ habit.title }}</h1>
         </div>
-        <div class="rounded-3xl p-4 mx-4 w-fit bg-gray-200">
+
+        <div class="rounded-3xl p-4 w-full bg-gray-200">
             <div class="pb-2 border-b border-gray-400 flex gap-6">
                 <div 
                     class="w-25 aspect-square border-2 border-dashed bg-gray-300 rounded-lg flex items-center justify-center"
@@ -21,7 +25,7 @@
                 <span>Color</span>
                 <button @click="toggleColor = true">
                     <div 
-                        class="w-10 h-5 rounded-full bg-amber-300" 
+                        class="w-10 h-5 rounded-full" 
                         :class=colorStore.bgClass
                     >
                     </div>
@@ -31,6 +35,21 @@
                 <span>Group</span>
                 <button @click="toggleGroup = true">
                     {{ habit.group }}
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2 rounded-3xl p-4 w-full bg-gray-200">
+            <span>Periodicity</span>
+            <div class="flex gap-4 mt-2">
+                <button
+                    v-for="option in periodicityOptions"
+                    :key="option"
+                    class="text-sm py-1 px-4 rounded-full"
+                    :class="selectedPeriodicity === option ? [colorStore.bgClass, 'text-white'] : 'bg-gray-300'"
+                    @click="updatePeriodicity(option)"
+                >
+                    {{ option }}
                 </button>
             </div>
         </div>
@@ -68,9 +87,23 @@ const id = useRoute().params.id;
 const habit = ref(null)
 
 const toggleColor = ref(false)
-const toggleGroup = ref(true)
+const toggleGroup = ref(false)
+const selectedPeriodicity = ref(null)
 
 const colorStore = useColorStore();
+
+const periodicityOptions = [
+    'Daily',
+    'Weekly',
+    'Monthly'
+]
+
+const updatePeriodicity = (option) => {
+    if (habit.value) {
+        habit.value.periodicity = option
+    }
+    selectedPeriodicity.value = option
+}
 
 async function fetchHabitWithId(id) {
     try {

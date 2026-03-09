@@ -6,8 +6,8 @@
             <button 
                 v-for="group in groups"
                 :key="group.id"
-                class="p-2 border border-gray-300 rounded-full w-full text-center"
-                :class="{[color]: group.name === defaultGroup}"
+                class="p-2 border rounded-full w-full text-center"
+                :class="group.name === defaultGroup ? [color, 'border-2'] : 'border-gray-300'"
                 @click.prevent="$emit('selected-group', group.name)"
             >
                 {{ group.name }}
@@ -27,7 +27,6 @@ const props = defineProps({
         default: 'border-blue-500'
     }
 })
-console.log(props)
 
 const groups = [
     { id: 1, name: 'Health' },
