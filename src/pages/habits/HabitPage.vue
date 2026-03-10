@@ -8,15 +8,16 @@
             <h1 class="text-2xl font-medium">{{ habit.title }}</h1>
         </div>
 
-        <div class="rounded-3xl p-4 w-full bg-gray-200">
+        <card-wrapper>
             <div class="pb-2 border-b border-gray-400 flex gap-6">
                 <div 
                     class="w-25 aspect-square border-2 border-dashed bg-gray-300 rounded-lg flex items-center justify-center"
                     :class="colorStore.borderClass"
+                    @click="toggleIcon = true"
                 >
                     <span class="text-4xl">{{ habit.icon }}</span> 
                 </div>
-                <div>
+                <div class="w-full">
                     <input class="py-1 border-b border-gray-400 w-full" type="text" v-model="habit.title">
                     <input class="py-1 w-full" type="text" v-model="habit.description" placeholder="Description (Optional)">
                 </div>
@@ -37,22 +38,32 @@
                     {{ habit.group }}
                 </button>
             </div>
-        </div>
+        </card-wrapper>
 
-        <div class="flex flex-col gap-2 rounded-3xl p-4 w-full bg-gray-200">
-            <span>Periodicity</span>
-            <div class="flex gap-4 mt-2">
-                <button
-                    v-for="option in periodicityOptions"
-                    :key="option"
-                    class="text-sm py-1 px-4 rounded-full"
-                    :class="selectedPeriodicity === option ? [colorStore.bgClass, 'text-white'] : 'bg-gray-300'"
-                    @click="updatePeriodicity(option)"
-                >
-                    {{ option }}
-                </button>
+        <card-wrapper>
+            <div class="flex flex-col gap-2">
+                <span>Periodicity</span>
+                <div class="flex gap-4 mt-2">
+                    <button
+                        v-for="option in periodicityOptions"
+                        :key="option"
+                        class="text-sm py-1 px-4 rounded-full"
+                        :class="selectedPeriodicity === option ? [colorStore.bgClass, 'text-white'] : 'bg-gray-300'"
+                        @click="updatePeriodicity(option)"
+                    >
+                        {{ option }}
+                    </button>
+                </div>
             </div>
-        </div>
+        </card-wrapper>
+
+        <Transition name="scale">
+            <IconSelectorModal 
+                v-if="toggleIcon"
+                @close-modal="toggleIcon = false"
+                @selected-icon="habit.icon = $event"
+            />
+        </Transition>
         <Transition name="scale">
             <ColorSelectorModal 
                 v-if="toggleColor" 
@@ -76,9 +87,12 @@
 </template>
 
 <script setup>
+import CardWrapper from '@/components/wrappers/CardWrapper.vue';
+import IconSelectorModal from '@/components/modals/IconSelectorModal.vue';
 import ColorSelectorModal from '@/components/modals/ColorSelectorModal.vue';
 import GroupSelectorModal from '@/components/modals/GroupSelectorModal.vue';
 import { useColorStore } from '@/stores/colorStore';
+import { useIconStore } from '@/stores/iconStore';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
@@ -88,6 +102,7 @@ const habit = ref(null)
 
 const toggleColor = ref(false)
 const toggleGroup = ref(false)
+const toggleIcon = ref(false)
 const selectedPeriodicity = ref(null)
 
 const colorStore = useColorStore();

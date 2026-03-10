@@ -18,7 +18,7 @@
 <script setup>
 import { useColorStore } from '@/stores/colorStore';
 
-const colorStore = useColorStore();
+const colorStore = useColorStore()
 </script>
 
 <style scoped>
