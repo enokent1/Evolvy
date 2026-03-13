@@ -41,21 +41,47 @@
         </card-wrapper>
 
         <card-wrapper>
-            <div class="flex flex-col gap-2">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-400">
                 <span>Periodicity</span>
-                <div class="flex gap-4 mt-2">
+                <div class="flex gap-2">
                     <button
                         v-for="option in periodicityOptions"
                         :key="option"
                         class="text-sm py-1 px-4 rounded-full"
-                        :class="selectedPeriodicity === option ? [colorStore.bgClass, 'text-white'] : 'bg-gray-300'"
-                        @click="updatePeriodicity(option)"
+                        :class="selectedPeriodicity === option.value ? [colorStore.bgClass, 'text-white'] : 'bg-gray-300'"
+                        @click="updatePeriodicity(option.value)"
                     >
-                        {{ option }}
+                        {{ option.name }}
                     </button>
                 </div>
             </div>
+            <div class="flex justify-between items-center pt-3">
+                <span>Goal value</span>
+                <div class="flex items-center gap-2">
+                    <input 
+                        type="number"
+                        placeholder="goal"
+                        v-model="habit.target"
+                        class="text-sm bg-gray-300 rounded-full w-16 py-1 px-2 text-center"
+                    >
+                    <button class="text-sm text-gray-600 py-1 px-4 rounded-full bg-gray-300"
+                        @click="toggleUnit = true"
+                    >
+                        {{ habit.unit }}
+                    </button>
+                </div>
+            </div>
+            <p class="mt-2 text-xs text-amber-600">
+                *Complete {{ habit.target }} {{ habit.unit }} each {{ habit.periodicity }}
+            </p>
         </card-wrapper>
+
+        <button 
+            :class="colorStore.bgClass + ' text-white py-2 rounded-full w-full'"
+            @click.prevent="addHabit"
+        >
+            Add habit
+        </button>
 
         <Transition name="scale">
             <IconSelectorModal 
@@ -80,6 +106,13 @@
                 :color="colorStore.borderClass"
             />
         </Transition>
+        <Transition name="scale">
+            <UnitSelectorModal 
+                v-if="toggleUnit"
+                @close-modal="toggleUnit = false"
+                @selected-unit="habit.unit = $event"
+            />
+        </Transition>
     </div>
     <div v-else>
         <p class="text-center text-gray-600">Loading...</p>
@@ -91,26 +124,27 @@ import CardWrapper from '@/components/wrappers/CardWrapper.vue';
 import IconSelectorModal from '@/components/modals/IconSelectorModal.vue';
 import ColorSelectorModal from '@/components/modals/ColorSelectorModal.vue';
 import GroupSelectorModal from '@/components/modals/GroupSelectorModal.vue';
+import UnitSelectorModal from '@/components/modals/UnitSelectorModal.vue';
 import { useColorStore } from '@/stores/colorStore';
-import { useIconStore } from '@/stores/iconStore';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
-const id = useRoute().params.id;
+const id = useRoute().params.id
 const habit = ref(null)
 
 const toggleColor = ref(false)
 const toggleGroup = ref(false)
 const toggleIcon = ref(false)
-const selectedPeriodicity = ref(null)
+const toggleUnit = ref(false)
+const selectedPeriodicity = ref('day')
 
-const colorStore = useColorStore();
+const colorStore = useColorStore()
 
 const periodicityOptions = [
-    'Daily',
-    'Weekly',
-    'Monthly'
+    {name: 'Daily', value: 'day'},
+    {name: 'Weekly', value: 'week'},
+    {name: 'Monthly', value: 'month'}
 ]
 
 const updatePeriodicity = (option) => {
@@ -124,6 +158,7 @@ async function fetchHabitWithId(id) {
     try {
         const response = await axios.get(`https://6994c147b081bc23e9c140ad.mockapi.io/habits/${id}`)
         habit.value = response.data
+        habit.value.periodicity = selectedPeriodicity.value
         console.log('Fetched habit: ', habit.value)
     } catch (error) {
         console.log('Error: ', error)

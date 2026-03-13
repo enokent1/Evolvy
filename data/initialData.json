@@ -1,14 +1,90 @@
 [
-    {"icon": "🚶", "title": "Walk", "group": "Health"},
-    {"icon": "🛌🏼", "title": "Sleep", "group": "Health"},
-    {"icon": "💧", "title": "Drink water", "group": "Health"},
-    {"icon": "🧘🏼‍♀️", "title": "Meditation", "group": "Health"},
-    {"icon": "🏃", "title": "Run", "group": "Sport"},
-    {"icon": "💪🏻", "title": "Workout", "group": "Sport"},
-    {"icon": "🧍🏼‍♂️", "title": "Stand", "group": "Health"},
-    {"icon": "🚲", "title": "Cycling", "group": "Sport"},
-    {"icon": "📅", "title": "Plan the Day", "group": "Productivity"},
-    {"icon": "📵", "title": "Limit Social Media", "group": "Productivity"},
-    {"icon": "📖", "title": "Read a book", "group": "Productivity"},
-    {"icon": "💻", "title": "Practice Coding", "group": "Productivity"}
+    {
+        "icon": "🚶", 
+        "title": "Walk", 
+        "group": "Health", 
+        "trackingType": "count", 
+        "target": 10000, 
+        "unit": "steps"
+    },
+    {
+        "icon": "🛌🏼", 
+        "title": "Sleep", 
+        "group": "Health", 
+        "trackingType": "count", 
+        "target": 8, 
+        "unit": "hours"
+    },
+    {
+        "icon": "💧", 
+        "title": "Drink water", 
+        "group": "Health", 
+        "trackingType": "count", 
+        "target": 1000, 
+        "unit": "ml"
+    },
+    {
+        "icon": "🧘🏼‍♀️", 
+        "title": "Meditation", 
+        "group": "Health", 
+        "trackingType": "count", 
+        "target": 10, 
+        "unit": "minutes"
+    },
+    {
+        "icon": "🏃", 
+        "title": "Run", 
+        "group": "Sport", 
+        "trackingType": "count", 
+        "target": 3, 
+        "unit": "km"
+    },
+    {
+        "icon": "💪🏻", 
+        "title": "Workout", 
+        "group": "Sport", 
+        "trackingType": "checkbox", 
+        "target": 1, 
+        "unit": "times"
+    },
+    {
+        "icon": "🚲", 
+        "title": "Cycling", 
+        "group": "Sport", 
+        "trackingType": "count", 
+        "target": 5, 
+        "unit": "km"
+    },
+    {
+        "icon": "📅", 
+        "title": "Plan the Day", 
+        "group": "Productivity", 
+        "trackingType": "checkbox", 
+        "target": 1,
+        "unit": "times"
+    },
+    {
+        "icon": "📵", 
+        "title": "Limit Social Media",
+        "group": "Productivity",
+        "trackingType": "count",
+        "target": 60,
+        "unit": "minutes"
+    },
+    {
+        "icon": "📖", 
+        "title": "Read a book", 
+        "group": "Productivity", 
+        "trackingType": "count", 
+        "target": 20, 
+        "unit": "minutes"
+    },
+    {
+        "icon": "💻", 
+        "title": "Practice Coding", 
+        "group": "Productivity", 
+        "trackingType": "count", 
+        "target": 60, 
+        "unit": "minutes"
+    }
 ]
