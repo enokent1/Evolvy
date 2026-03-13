@@ -76,11 +76,13 @@
             </p>
         </card-wrapper>
 
-        <button 
-            :class="colorStore.bgClass + ' text-white py-2 rounded-full w-full'"
+        <button
             @click.prevent="addHabit"
+            :disabled="isSending"
+            :class="colorStore.bgClass + ' text-white py-2 rounded-full w-full'"
         >
-            Add habit
+            <span v-if="isSending">Adding...</span>
+            <span v-else>Add habit</span>
         </button>
 
         <Transition name="scale">
@@ -113,6 +115,15 @@
                 @selected-unit="habit.unit = $event"
             />
         </Transition>
+        <Transition name="scale">
+            <ShowResultMessageModal 
+                v-if="showResultMessage"
+                :type="resultMessageData.type"
+                :message="resultMessageData.message"
+                @router-back="router.back()"
+                @close-modal="showResultMessage = false"
+            />
+        </Transition>
     </div>
     <div v-else>
         <p class="text-center text-gray-600">Loading...</p>
@@ -125,10 +136,12 @@ import IconSelectorModal from '@/components/modals/IconSelectorModal.vue';
 import ColorSelectorModal from '@/components/modals/ColorSelectorModal.vue';
 import GroupSelectorModal from '@/components/modals/GroupSelectorModal.vue';
 import UnitSelectorModal from '@/components/modals/UnitSelectorModal.vue';
+import ShowResultMessageModal from '@/components/modals/ShowResultMessageModal.vue';
 import { useColorStore } from '@/stores/colorStore';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import router from '@/router';
 
 const id = useRoute().params.id
 const habit = ref(null)
@@ -137,7 +150,15 @@ const toggleColor = ref(false)
 const toggleGroup = ref(false)
 const toggleIcon = ref(false)
 const toggleUnit = ref(false)
+
 const selectedPeriodicity = ref('day')
+
+const isSending = ref(false)
+const showResultMessage = ref(false)
+const resultMessageData = ref({
+    type: '',
+    message: ''
+})
 
 const colorStore = useColorStore()
 
@@ -169,6 +190,28 @@ async function fetchHabitWithId(id) {
 onMounted(() => {
     fetchHabitWithId(id)
 })
+
+async function addHabit() {
+    try {
+        isSending.value = true
+        const response = await axios.post('https://6994c147b081bc23e9c140ad.mockapi.io/user-habits', habit.value)
+        console.log('Habit added: ', response.data)
+
+        resultMessageData.value = {
+            type: 'success',
+            message: 'Habit added!'
+        }
+
+        showResultMessage.value = true
+    } catch (error) {
+        console.log('Error: ', error)
+        resultMessageData.value = {
+            type: 'error',
+            message: 'Failed to add habit :('
+        }
+        showResultMessage.value = true
+    } 
+}
 
 </script>
 
