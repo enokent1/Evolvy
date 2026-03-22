@@ -96,7 +96,7 @@
             <ColorSelectorModal 
                 v-if="toggleColor" 
                 @close-modal="toggleColor = false"
-                @selected-color="colorStore.setColor"
+                @selected-color="setColorTheme($event)"
             />
         </Transition>
         <Transition name="scale">
@@ -190,6 +190,11 @@ async function fetchHabitWithId(id) {
 onMounted(() => {
     fetchHabitWithId(id)
 })
+
+function setColorTheme(colorKey) {
+    colorStore.setColor(colorKey)
+    habit.value.color = colorKey
+}
 
 async function addHabit() {
     try {

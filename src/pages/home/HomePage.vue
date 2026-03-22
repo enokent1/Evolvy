@@ -1,14 +1,51 @@
 <template>
-  <div class="py-12">
-    <h1 class="text-4xl font-bold mb-4">Добро пожаловать на Evolvy</h1>
-    <p class="text-lg text-gray-600">Это главная страница приложения</p>
+  <div v-if="userHabits">
+    <h1 class="text-2xl font-medium text-center mb-6 ">{{ dateDisplayName }}</h1>
+    <Calendar 
+      @selected-day="resolveDateDisplay($event)"
+    />
+    <div class="flex flex-col gap-3 mx-2">
+      <HabitCard 
+        v-for="habit in userHabits"
+        :key="habit.id"
+        :habit="habit"
+      />
+    </div>
+  </div>
+  <div v-else>
+    <p class="text-center text-gray-600">Loading...</p>
   </div>
 </template>
 
 <script setup>
+import HabitCard from '@/components/features/HabitCard.vue';
+import Calendar from '@/components/features/Calendar.vue';
 
+import axios from 'axios';
+import { ref } from 'vue';
+
+const userHabits = ref(null)
+const dateDisplayName = ref('Today')
+
+async function getHabits() {
+  try {
+    const response = await axios.get('https://6994c147b081bc23e9c140ad.mockapi.io/user-habits')
+
+    userHabits.value = response.data
+  } catch (error) {
+    console.log('Error fetching user habits: ', error)
+  }
+}
+getHabits()
+
+function resolveDateDisplay(day) {
+  const targetDate = new Date(day)
+  const isToday = new Date().toDateString() === targetDate.toDateString()
+
+  if (isToday) {
+    dateDisplayName.value = 'Today'
+  } else {
+    dateDisplayName.value = targetDate.toLocaleDateString('en-US', {month: 'long', day: 'numeric'})
+  }
+}
 </script>
-
-<style lang="scss" scoped>
-
-</style>

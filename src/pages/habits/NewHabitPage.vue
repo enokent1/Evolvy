@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import HabitLink from '@/components/HabitLink.vue';
+import HabitLink from '@/components/features/HabitLink.vue';
 import axios from 'axios';
 
 async function fetchAndSaveData() {
