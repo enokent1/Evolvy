@@ -34,7 +34,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     habit: {
         type: Object,
@@ -48,7 +48,7 @@ import { ref, computed } from 'vue';
 const colorStore = useColorStore()
 const colorData = computed(() => colorStore.getColorData(props.habit.color))
 
-const currentCount = ref(0)
+const currentCount = ref<number>(0)
 
 function addCound() {
     if (currentCount.value < props.habit.target) {

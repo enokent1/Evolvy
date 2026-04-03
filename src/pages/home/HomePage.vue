@@ -17,28 +17,43 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import HabitCard from '@/components/features/HabitCard.vue';
 import Calendar from '@/components/features/Calendar.vue';
 
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
-const userHabits = ref(null)
-const dateDisplayName = ref('Today')
+type Habit = {
+  id: string
+  icon: string
+  title: string
+  description?: string
+  group: 'Health' | 'Productivity' | 'Sport'
+  color: string
+  target: number
+  unit: 'times' | 'steps' | 'm' | 'km' | 'ml' | 'l' | 'g' | 'mg' | 'sec' | 'min' | 'hr'
+  trackingType: 'count'
+}
+
+const userHabits = ref<Habit[]>([])
+const dateDisplayName = ref<string>('Today')
 
 async function getHabits() {
   try {
-    const response = await axios.get('https://6994c147b081bc23e9c140ad.mockapi.io/user-habits')
-
+    const response = await axios.get<Habit[]>('https://6994c147b081bc23e9c140ad.mockapi.io/user-habits')
+    console.log(response.data)
     userHabits.value = response.data
   } catch (error) {
     console.log('Error fetching user habits: ', error)
   }
 }
-getHabits()
 
-function resolveDateDisplay(day) {
+onMounted(() => {
+  getHabits()
+})
+
+function resolveDateDisplay(day: Date): void {
   const targetDate = new Date(day)
   const isToday = new Date().toDateString() === targetDate.toDateString()
 

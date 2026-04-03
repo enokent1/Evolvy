@@ -14,7 +14,7 @@
     </modal-wrapper>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ModalWrapper from '../wrappers/ModalWrapper.vue';
 
 const props = defineProps({
@@ -28,7 +28,12 @@ const props = defineProps({
     }
 })
 
-const groups = [
+type Group = {
+    id: number
+    name: 'Health' | 'Productivity' | 'Sport'
+}
+
+const groups: Group[] = [
     { id: 1, name: 'Health' },
     { id: 2, name: 'Productivity' },
     { id: 3, name: 'Sport' },

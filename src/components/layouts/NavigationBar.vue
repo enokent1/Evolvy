@@ -11,15 +11,22 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { RouterLink } from 'vue-router';
+import type { Component } from 'vue';
 
 import HomeIcon from '@/assets/icons/HomeIcon.vue';
 import ListIcon from '@/assets/icons/ListIcon.vue';
 import CalendarIcon from '@/assets/icons/CalendarIcon.vue';
 import UserIcon from '@/assets/icons/UserIcon.vue';
 
-const links = [
+type NavLink = {
+  route: string
+  name: string
+  icon: Component
+}
+
+const links: NavLink[] = [
     {route: '/', name: 'home', icon: HomeIcon},
     {route: '/habits', name: 'habits', icon: ListIcon},
     {route: '/calendar', name: 'calendar', icon: CalendarIcon},

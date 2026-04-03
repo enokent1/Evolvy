@@ -46,7 +46,7 @@
                 <div class="flex gap-2">
                     <button
                         v-for="option in periodicityOptions"
-                        :key="option"
+                        :key="option.name"
                         class="text-sm py-1 px-4 rounded-full"
                         :class="selectedPeriodicity === option.value ? [colorStore.bgClass, 'text-white'] : 'bg-gray-300'"
                         @click="updatePeriodicity(option.value)"
@@ -130,7 +130,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CardWrapper from '@/components/wrappers/CardWrapper.vue';
 import IconSelectorModal from '@/components/modals/IconSelectorModal.vue';
 import ColorSelectorModal from '@/components/modals/ColorSelectorModal.vue';
@@ -143,41 +143,66 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import router from '@/router';
 
-const id = useRoute().params.id
-const habit = ref(null)
+type Periodicity = 'day' | 'week' | 'month'
 
-const toggleColor = ref(false)
-const toggleGroup = ref(false)
-const toggleIcon = ref(false)
-const toggleUnit = ref(false)
+type Habit = {
+    id: string
+    icon: string
+    title: string
+    description?: string
+    color?: string
+    group: string
+    target: number
+    unit: string
+    periodicity: Periodicity
+}
 
-const selectedPeriodicity = ref('day')
+type ResultMessage = {
+    type: 'success' | 'error'
+    message: string
+}
 
-const isSending = ref(false)
-const showResultMessage = ref(false)
-const resultMessageData = ref({
-    type: '',
+type PeriodicityOption = {
+    name: string
+    value: Periodicity
+}
+
+const route = useRoute()
+const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+const habit = ref<Habit | null>(null)
+
+const toggleColor = ref<boolean>(false)
+const toggleGroup = ref<boolean>(false)
+const toggleIcon = ref<boolean>(false)
+const toggleUnit = ref<boolean>(false)
+
+const selectedPeriodicity = ref<Periodicity>('day')
+
+const isSending = ref<boolean>(false)
+const showResultMessage = ref<boolean>(false)
+const resultMessageData = ref<ResultMessage>({
+    type: 'success',
     message: ''
 })
 
 const colorStore = useColorStore()
 
-const periodicityOptions = [
+const periodicityOptions: PeriodicityOption[] = [
     {name: 'Daily', value: 'day'},
     {name: 'Weekly', value: 'week'},
     {name: 'Monthly', value: 'month'}
 ]
 
-const updatePeriodicity = (option) => {
+const updatePeriodicity = (option: Periodicity): void => {
     if (habit.value) {
         habit.value.periodicity = option
     }
     selectedPeriodicity.value = option
 }
 
-async function fetchHabitWithId(id) {
+async function fetchHabitWithId(habitId: string) {
     try {
-        const response = await axios.get(`https://6994c147b081bc23e9c140ad.mockapi.io/habits/${id}`)
+        const response = await axios.get<Habit>(`https://6994c147b081bc23e9c140ad.mockapi.io/habits/${habitId}`)
         habit.value = response.data
         habit.value.periodicity = selectedPeriodicity.value
         console.log('Fetched habit: ', habit.value)
@@ -191,15 +216,17 @@ onMounted(() => {
     fetchHabitWithId(id)
 })
 
-function setColorTheme(colorKey) {
+function setColorTheme(colorKey: string): void {
     colorStore.setColor(colorKey)
-    habit.value.color = colorKey
+    if (habit.value) {
+        habit.value.color = colorKey
+    }
 }
 
 async function addHabit() {
     try {
         isSending.value = true
-        const response = await axios.post('https://6994c147b081bc23e9c140ad.mockapi.io/user-habits', habit.value)
+        const response = await axios.post<Habit>('https://6994c147b081bc23e9c140ad.mockapi.io/user-habits', habit.value)
         console.log('Habit added: ', response.data)
 
         resultMessageData.value = {

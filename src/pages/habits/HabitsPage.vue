@@ -12,6 +12,3 @@
     </RouterLink>
 </template>
 
-<script setup>
-
-</script>
