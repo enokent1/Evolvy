@@ -1,6 +1,13 @@
 <template>
   <div v-if="habit" class="flex flex-col gap-6 p-5">
-    <div class="mx-auto mb-2 flex w-fit items-center gap-2">
+    <div
+      class="relative mx-auto mb-2 flex w-full items-center justify-center gap-2"
+    >
+      <button @click="router.back()" class="absolute left-0">
+        <AngleLeft
+          class="size-6 transition-all hover:scale-110 hover:cursor-pointer"
+        />
+      </button>
       <span class="text-2xl">{{ habit.icon }}</span>
       <h1 class="text-2xl font-medium">{{ habit.title }}</h1>
     </div>
@@ -169,6 +176,7 @@ import GroupSelectorModal from "@/components/modals/GroupSelectorModal.vue";
 import UnitSelectorModal from "@/components/modals/UnitSelectorModal.vue";
 import DateSelectorModal from "@/components/modals/DateSelectorModal.vue";
 import ShowResultMessageModal from "@/components/modals/ShowResultMessageModal.vue";
+import AngleLeft from "@/assets/icons/AngleLeft.vue";
 import { useColorStore } from "@/stores/colorStore";
 import { useRoute } from "vue-router";
 import axios from "axios";

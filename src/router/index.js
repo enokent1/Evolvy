@@ -11,7 +11,7 @@ const routes = [
   {path: '/calendar', component: CalendarPage},
   {path: '/profile', component: ProfilePage},
   {path: '/habits/new', component: () => import('@/pages/habits/NewHabitPage.vue')},
-  {path: '/habits/:id', component: () => import('@/pages/habits/HabitPage.vue')},
+  {path: '/habits/:id', component: () => import('@/pages/habits/HabitPage.vue'), meta: {hideNavigationBar: true}},
 ]
 
 export default createRouter({
