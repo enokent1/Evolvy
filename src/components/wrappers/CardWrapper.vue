@@ -1,6 +1,5 @@
 <template>
-    <div class="rounded-3xl p-4 w-full bg-gray-200">
-        <slot></slot>
-    </div>
+  <div class="w-full rounded-3xl bg-gray-200 p-4">
+    <slot></slot>
+  </div>
 </template>
-

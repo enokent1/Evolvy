@@ -1,20 +1,20 @@
 <template>
-    <button class="bg-gray-200 border border-gray-400 text-sm p-3 rounded-xl">
-        {{ unit }}
-    </button>
+  <button class="rounded-xl border border-gray-400 bg-gray-200 p-3 text-sm">
+    {{ unit }}
+  </button>
 </template>
 
 <script setup>
 const props = defineProps({
-    unit: {
-        type: String,
-        default: 'times'
-    }
-})
+  unit: {
+    type: String,
+    default: "times",
+  },
+});
 </script>
 
 <script>
 export default {
-    name: 'unit-button'
-}
+  name: "unit-button",
+};
 </script>

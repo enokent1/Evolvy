@@ -1,17 +1,21 @@
 <template>
   <div>
     <h1 class="mb-6 text-center text-2xl font-medium">Calendar</h1>
-    <div class="m-2 rounded-2xl px-5 py-3 bg-gray-200">
+    <div class="m-2 rounded-2xl bg-gray-200 px-5 py-3">
       <div class="flex items-center justify-between">
         <button @click="previousMonth"><AngleLeft class="size-4" /></button>
-        <span class="font-semibold text-xl">
-            {{ monthName }}, {{ currentYear }}
+        <span class="text-xl font-semibold">
+          {{ monthName }}, {{ currentYear }}
         </span>
         <button @click="nextMonth"><AngleRight class="size-4" /></button>
       </div>
       <div>
-        <div class="grid grid-cols-7 gap-3 mt-2">
-          <span class="text-center font-medium" v-for="dayOfWeek in daysOfWeek" :key="dayOfWeek">
+        <div class="mt-2 grid grid-cols-7 gap-3">
+          <span
+            class="text-center font-medium"
+            v-for="dayOfWeek in daysOfWeek"
+            :key="dayOfWeek"
+          >
             {{ dayOfWeek }}
           </span>
           <span
@@ -20,7 +24,8 @@
             class="text-center"
             :class="{
               'text-gray-400': !item.isCurrentMonth,
-              'bg-blue-500 text-white rounded-full': item.date.toDateString() === today.toDateString()
+              'rounded-full bg-blue-500 text-white':
+                item.date.toDateString() === today.toDateString(),
             }"
           >
             {{ item.day }}
@@ -53,9 +58,9 @@ const currentMonth = computed(() => currentDate.value.getMonth());
 const currentYear = computed(() => currentDate.value.getFullYear());
 
 const monthName = computed<string>(() => {
-    const date = new Date(currentYear.value, currentMonth.value);
-    return date.toLocaleString("en-US", { month: "long" });
-})
+  const date = new Date(currentYear.value, currentMonth.value);
+  return date.toLocaleString("en-US", { month: "long" });
+});
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
