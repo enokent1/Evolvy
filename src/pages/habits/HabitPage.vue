@@ -97,13 +97,19 @@
       <span> Timeframe </span>
       <div>
         <span> Start date: </span>
-        <button @click="toggleCalendar = true">
+        <button @click="openStartDatePicker">
           {{ startDate.toLocaleDateString() }}
         </button>
       </div>
       <div>
         <span> End date: </span>
-        <button @click="toggleCalendar = true">No End Date</button>
+        <button @click="openEndDatePicker">
+          {{
+            endDate === "No End Date"
+              ? "No End Date"
+              : endDate.toLocaleDateString()
+          }}
+        </button>
       </div>
     </card-wrapper>
 
@@ -149,7 +155,7 @@
     <Transition name="scale">
       <DateSelectorModal
         v-if="toggleCalendar"
-        :default-date="startDate"
+        :date-selector-params="dateSelectorProps"
         @close-modal="toggleCalendar = false"
       />
     </Transition>
@@ -195,6 +201,8 @@ type Habit = {
   target: number;
   unit: string;
   periodicity: Periodicity;
+  startDate: string;
+  endDate: string | null;
 };
 
 type ResultMessage = {
@@ -206,6 +214,9 @@ type PeriodicityOption = {
   name: string;
   value: Periodicity;
 };
+
+type DateSelectorMode = "start" | "end";
+type EndDateValue = Date | "No End Date";
 
 const route = useRoute();
 const id = Array.isArray(route.params.id)
@@ -244,11 +255,45 @@ const updatePeriodicity = (option: Periodicity): void => {
 };
 
 const startDate = ref<Date>(new Date());
-const setStartDate = (date: Date): void => {
-  startDate.value = date;
+const endDate = ref<EndDateValue>("No End Date");
+
+const dateSelectorProps = ref({
+  mode: "start" as DateSelectorMode,
+  value: null as Date | null,
+});
+
+const openStartDatePicker = () => {
+  dateSelectorProps.value = {
+    mode: "start",
+    value: startDate.value,
+  };
+  toggleCalendar.value = true;
 };
-provide("selected-date", setStartDate);
-provide("default-start-date", startDate);
+
+const openEndDatePicker = () => {
+  dateSelectorProps.value = {
+    mode: "end",
+    value: endDate.value === "No End Date" ? null : endDate.value,
+  };
+  toggleCalendar.value = true;
+};
+
+const setSelectedDate = (
+  result: Date | "No End Date" | null,
+  mode: DateSelectorMode,
+) => {
+  if (mode === "start" && result instanceof Date) {
+    startDate.value = result;
+  } else if (mode === "end") {
+    if (result === "No End Date") {
+      endDate.value = "No End Date";
+    } else if (result instanceof Date) {
+      endDate.value = result;
+    }
+  }
+};
+
+provide("selected-date", setSelectedDate);
 
 async function fetchHabitWithId(habitId: string) {
   try {
@@ -275,12 +320,41 @@ function setColorTheme(colorKey: string): void {
   }
 }
 
+const prepareHabitForSubmit = () => {
+  if (!habit.value) return null;
+
+  return {
+    ...habit.value,
+    startDate: startDate.value.toISOString(),
+    endDate:
+      endDate.value === "No End Date" ? null : endDate.value.toISOString(),
+  };
+};
+
+const validateDates = (): boolean => {
+  if (endDate.value !== "No End Date" && endDate.value < startDate.value) {
+    resultMessageData.value = {
+      type: "error",
+      message: "End date cannot be earlier than start date",
+    };
+    showResultMessage.value = true;
+    return false;
+  }
+  return true;
+};
+
 async function addHabit() {
   try {
     isSending.value = true;
+
+    if (!validateDates()) return;
+
+    const habitToSubmit = prepareHabitForSubmit();
+    if (!habitToSubmit) return;
+
     const response = await axios.post<Habit>(
       "https://6994c147b081bc23e9c140ad.mockapi.io/user-habits",
-      habit.value,
+      habitToSubmit,
     );
     console.log("Habit added: ", response.data);
 
@@ -297,6 +371,8 @@ async function addHabit() {
       message: "Failed to add habit :(",
     };
     showResultMessage.value = true;
+  } finally {
+    isSending.value = false;
   }
 }
 </script>

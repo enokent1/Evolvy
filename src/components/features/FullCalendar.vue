@@ -28,7 +28,7 @@
           :class="{
             'text-gray-400': !item.isCurrentMonth,
             'rounded-full bg-blue-500 text-white':
-              item.date.toDateString() === defaultDate.toDateString(),
+              item.date.toDateString() === selectedDate.toDateString(),
           }"
         >
           {{ item.day }}
@@ -41,10 +41,11 @@
 <script setup lang="ts">
 import AngleLeft from "@/assets/icons/AngleLeft.vue";
 import AngleRight from "@/assets/icons/AngleRight.vue";
-import { ref, computed, inject, type Ref } from "vue";
+import { ref, computed, inject, watch } from "vue";
 
 const props = defineProps<{
   defaultDate: Date;
+  mode: "start" | "end";
 }>();
 
 const emit = defineEmits<{
@@ -60,10 +61,18 @@ type CalendarDay = {
 
 const daysOfWeek: string[] = ["M", "T", "W", "T", "F", "S", "S"];
 
-const currentDate = ref(new Date());
+const selectedDate = ref(new Date(props.defaultDate));
+const currentMonth = ref(props.defaultDate.getMonth());
+const currentYear = ref(props.defaultDate.getFullYear());
 
-const currentMonth = computed(() => currentDate.value.getMonth());
-const currentYear = computed(() => currentDate.value.getFullYear());
+watch(
+  () => props.defaultDate,
+  (newDate) => {
+    selectedDate.value = new Date(newDate);
+    currentMonth.value = newDate.getMonth();
+    currentYear.value = newDate.getFullYear();
+  },
+);
 
 const monthName = computed<string>(() => {
   const date = new Date(currentYear.value, currentMonth.value);
@@ -105,7 +114,7 @@ const daysArray = computed<CalendarDay[]>(() => {
       day: i,
       isCurrentMonth: true,
       date,
-      method: () => selectedDate(date),
+      method: () => selectDate(date),
     });
   }
 
@@ -125,17 +134,30 @@ const daysArray = computed<CalendarDay[]>(() => {
 });
 
 function nextMonth(): void {
-  currentDate.value = new Date(currentYear.value, currentMonth.value + 1, 1);
+  currentMonth.value = (currentMonth.value + 1) % 12;
+  if (currentMonth.value === 0) {
+    currentYear.value++;
+  }
 }
 
 function previousMonth(): void {
-  currentDate.value = new Date(currentYear.value, currentMonth.value - 1, 1);
+  currentMonth.value = (currentMonth.value - 1 + 12) % 12;
+  if (currentMonth.value === 11) {
+    currentYear.value--;
+  }
 }
 
-const selectDate = inject<(date: Date) => void>("selected-date");
-function selectedDate(date: Date): void {
-  if (selectDate) {
-    selectDate(date);
+const selectDateInjected =
+  inject<(date: Date | "No End Date" | null, mode: "start" | "end") => void>(
+    "selected-date",
+  );
+
+function selectDate(date: Date): void {
+  selectedDate.value = new Date(date);
+  currentMonth.value = date.getMonth();
+  currentYear.value = date.getFullYear();
+  if (selectDateInjected) {
+    selectDateInjected(date, props.mode);
   }
 }
 </script>
