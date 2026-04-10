@@ -1,9 +1,18 @@
 <template>
   <div v-if="userHabits">
     <h1 class="mb-6 text-center text-2xl font-medium">{{ dateDisplayName }}</h1>
-    <Calendar @selected-day="resolveDateDisplay($event)" />
+    <Calendar
+      @selected-day="resolveDateDisplay($event)"
+      :selected-date="selectedDate"
+    />
     <div class="mx-2 flex flex-col gap-3">
-      <HabitCard v-for="habit in userHabits" :key="habit.id" :habit="habit" />
+      <HabitCard
+        v-for="habit in filteredHabits"
+        :key="habit.id"
+        :habit="habit"
+        :current-count="getCurrentProgress(habit.id)"
+        @update-progress="(newCount) => updateProgress(habit.id, newCount)"
+      />
     </div>
   </div>
   <div v-else>
@@ -16,7 +25,7 @@ import HabitCard from "@/components/features/HabitCard.vue";
 import Calendar from "@/components/features/WeeklyCalendar.vue";
 
 import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 type Habit = {
   id: string;
@@ -39,10 +48,53 @@ type Habit = {
     | "min"
     | "hr";
   trackingType: "count";
+  periodicity: "day" | "week" | "month";
+  startDate: string;
+  endDate: string | null;
 };
 
 const userHabits = ref<Habit[]>([]);
 const dateDisplayName = ref<string>("Today");
+
+const progressData = ref<Record<string, number>>({});
+const selectedDate = ref<Date>(new Date());
+
+const filteredHabits = computed(() => {
+  if (!userHabits.value.length) return [];
+
+  return userHabits.value.filter((habit) => {
+    const selectedDateStr = selectedDate.value.toISOString().slice(0, 10);
+    const startDateStr = habit.startDate.slice(0, 10);
+    const endDateStr = habit.endDate?.slice(0, 10) || null;
+    const isAfterStart = selectedDateStr >= startDateStr;
+    const isBeforeEnd = !endDateStr || selectedDateStr <= endDateStr;
+
+    return isAfterStart && isBeforeEnd;
+  });
+});
+
+const loadProgress = () => {
+  const saved = localStorage.getItem("habitProgress");
+  if (saved) {
+    progressData.value = JSON.parse(saved);
+  }
+};
+const saveProgress = () => {
+  localStorage.setItem("habitProgress", JSON.stringify(progressData.value));
+};
+
+const getCurrentProgress = (habitId: string): number => {
+  const dataKey = selectedDate.value.toISOString().slice(0, 10);
+  return progressData.value[`${habitId}_${dataKey}`] || 0;
+};
+
+const updateProgress = (habitId: string, newCount: number) => {
+  const dataKey = selectedDate.value.toISOString().slice(0, 10);
+  const key = `${habitId}_${dataKey}`;
+
+  progressData.value[key] = newCount;
+  saveProgress();
+};
 
 async function getHabits() {
   try {
@@ -58,6 +110,8 @@ async function getHabits() {
 
 onMounted(() => {
   getHabits();
+  loadProgress();
+  selectedDate.value = new Date();
 });
 
 function resolveDateDisplay(day: Date): void {
@@ -72,5 +126,7 @@ function resolveDateDisplay(day: Date): void {
       day: "numeric",
     });
   }
+
+  selectedDate.value = targetDate;
 }
 </script>

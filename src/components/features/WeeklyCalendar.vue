@@ -8,7 +8,7 @@
         <div
           v-for="day in extendedWeekDates"
           :key="day.iso"
-          class="flex w-10 shrink-0 flex-col items-center gap-2 rounded-full p-2"
+          class="flex w-10 shrink-0 flex-col items-center gap-2 rounded-full p-2 hover:cursor-pointer"
           :class="{
             'bg-linear-to-r from-emerald-500 to-teal-500 text-white':
               isSelected(day),
@@ -29,7 +29,11 @@
 <script setup lang="ts">
 import AngleLeft from "@/assets/icons/AngleLeft.vue";
 import AngleRight from "@/assets/icons/AngleRight.vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+
+const props = defineProps<{
+  selectedDate?: Date;
+}>();
 
 type Day = {
   date: Date;
@@ -101,6 +105,17 @@ function nextWeek(): void {
     weekStrip.value?.scrollTo({ left: dayWidth * 7, behavior: "instant" });
   }, 300);
 }
+
+watch(
+  () => props.selectedDate,
+  (newDate) => {
+    if (newDate) {
+      selectedDate.value = newDate;
+      currentWeekStart.value = getMonday(newDate);
+    }
+  },
+  { immediate: true },
+);
 
 onMounted(() => {
   weekStrip.value?.scrollTo({ left: dayWidth * 7, behavior: "instant" });

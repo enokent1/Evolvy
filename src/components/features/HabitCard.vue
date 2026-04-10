@@ -21,39 +21,47 @@
           class="rounded-lg border px-3 py-0.5 text-sm"
           :class="[colorData.borderClass, colorData.bgLightClass]"
         >
-          {{ currentCount }} / {{ habit.target }} {{ habit.unit }}
+          {{ props.currentCount }} / {{ habit.target }} {{ habit.unit }}
         </span>
       </div>
     </div>
-    <button class="rounded-lg bg-gray-200 p-2" @click.prevent="addCound">
+    <button class="rounded-lg bg-gray-200 p-2" @click.prevent="addCount">
       +
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useColorStore } from "@/stores/colorStore";
+import { ref, computed } from "vue";
+
 const props = defineProps({
   habit: {
     type: Object,
     required: true,
   },
+  currentCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
-import { useColorStore } from "@/stores/colorStore";
-import { ref, computed } from "vue";
+const emit = defineEmits<{
+  "update-progress": [count: number];
+}>();
 
 const colorStore = useColorStore();
 const colorData = computed(() => colorStore.getColorData(props.habit.color));
 
 const currentCount = ref<number>(0);
 
-function addCound() {
-  if (currentCount.value < props.habit.target) {
-    currentCount.value++;
+function addCount() {
+  if (props.currentCount < props.habit.target) {
+    emit("update-progress", props.currentCount + 1);
   }
 }
 
 const fillPercentage = computed(() => {
-  return (currentCount.value / props.habit.target) * 100;
+  return (props.currentCount / props.habit.target) * 100;
 });
 </script>
