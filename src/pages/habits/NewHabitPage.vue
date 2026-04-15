@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import HabitLink from "@/components/features/HabitLink.vue";
-import axios from "axios";
+import { habitsApi } from "@/api/habits";
 import { ref, onMounted } from "vue";
 
 type HabitItem = {
@@ -26,9 +26,7 @@ const habitsList = ref<HabitItem[]>([]);
 
 async function fetchAndSaveData(): Promise<void> {
   try {
-    const response = await axios.get<HabitItem[]>(
-      "https://6994c147b081bc23e9c140ad.mockapi.io/habits/",
-    );
+    const response = await habitsApi.getAll()
     localStorage.setItem("habits", JSON.stringify(response.data));
     habitsList.value = response.data;
   } catch (error) {

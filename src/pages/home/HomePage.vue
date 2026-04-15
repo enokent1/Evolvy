@@ -24,7 +24,7 @@
 import HabitCard from "@/components/features/HabitCard.vue";
 import Calendar from "@/components/features/WeeklyCalendar.vue";
 
-import axios from "axios";
+import { habitsApi } from "@/api/habits";
 import { ref, onMounted, computed } from "vue";
 
 type Habit = {
@@ -98,9 +98,7 @@ const updateProgress = (habitId: string, newCount: number) => {
 
 async function getHabits() {
   try {
-    const response = await axios.get<Habit[]>(
-      "https://6994c147b081bc23e9c140ad.mockapi.io/user-habits",
-    );
+    const response = await habitsApi.getUserHabits()
     console.log(response.data);
     userHabits.value = response.data;
   } catch (error) {

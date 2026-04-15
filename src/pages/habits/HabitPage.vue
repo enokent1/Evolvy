@@ -185,9 +185,9 @@ import ShowResultMessageModal from "@/components/modals/ShowResultMessageModal.v
 import AngleLeft from "@/assets/icons/AngleLeft.vue";
 import { useColorStore } from "@/stores/colorStore";
 import { useRoute } from "vue-router";
-import axios from "axios";
 import { onMounted, ref, provide } from "vue";
-import router from "@/router";
+import router from "@/app/router";
+import { habitsApi } from "@/api/habits";
 
 type Periodicity = "day" | "week" | "month";
 
@@ -297,11 +297,8 @@ provide("selected-date", setSelectedDate);
 
 async function fetchHabitWithId(habitId: string) {
   try {
-    const response = await axios.get<Habit>(
-      `https://6994c147b081bc23e9c140ad.mockapi.io/habits/${habitId}`,
-    );
+    const response = await habitsApi.getById(habitId)
     habit.value = response.data;
-    habit.value.periodicity = selectedPeriodicity.value;
     console.log("Fetched habit: ", habit.value);
   } catch (error) {
     console.log("Error: ", error);
@@ -352,10 +349,7 @@ async function addHabit() {
     const habitToSubmit = prepareHabitForSubmit();
     if (!habitToSubmit) return;
 
-    const response = await axios.post<Habit>(
-      "https://6994c147b081bc23e9c140ad.mockapi.io/user-habits",
-      habitToSubmit,
-    );
+    const response = await habitsApi.create(habitToSubmit)
     console.log("Habit added: ", response.data);
 
     resultMessageData.value = {
