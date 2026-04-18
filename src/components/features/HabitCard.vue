@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex justify-between overflow-hidden rounded-lg p-2"
+    class="relative flex justify-between overflow-hidden rounded-lg p-2 pr-4"
     :class="colorData.bgLightClass"
   >
     <div
@@ -21,47 +21,108 @@
           class="rounded-lg border px-3 py-0.5 text-sm"
           :class="[colorData.borderClass, colorData.bgLightClass]"
         >
-          {{ props.currentCount }} / {{ habit.target }} {{ habit.unit }}
+          {{ currentCount }} / {{ habit.target }} {{ habit.unit }}
         </span>
       </div>
     </div>
-    <button class="rounded-lg bg-gray-200 p-2" @click.prevent="addCount">
-      +
+    <button
+      v-if="currentCount !== habit.target"
+      @click.prevent="addCount"
+      class="hover:cursor-pointer"
+    >
+      <Add class="size-5" />
     </button>
+    <span v-else class="z-10 flex items-center justify-center">
+      <Check class="size-4" />
+    </span>
   </div>
 </template>
 
 <script setup lang="ts">
+import Add from "@/assets/icons/Add.vue";
+import Check from "@/assets/icons/Check.vue";
 import { useColorStore } from "@/stores/colorStore";
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 
-const props = defineProps({
-  habit: {
-    type: Object,
-    required: true,
-  },
-  currentCount: {
-    type: Number,
-    default: 0,
-  },
+type Habit = {
+  id: string;
+  icon: string;
+  title: string;
+  description?: string;
+  group: "Health" | "Productivity" | "Sport";
+  color: string;
+  target: number;
+  unit:
+    | "times"
+    | "steps"
+    | "m"
+    | "km"
+    | "ml"
+    | "l"
+    | "g"
+    | "mg"
+    | "sec"
+    | "min"
+    | "hr";
+  trackingType: "count";
+  startDate: string;
+  endDate: string | null;
+};
+
+const props = defineProps<{
+  habit: Habit;
+  selectedDate?: Date;
+}>();
+
+const currentCount = ref<number>(0);
+const progressKey = computed(() => {
+  const date = props.selectedDate ? new Date(props.selectedDate) : new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateKey = `${year}-${month}-${day}`;
+  return `${props.habit.id}_${dateKey}`;
 });
 
-const emit = defineEmits<{
-  "update-progress": [count: number];
-}>();
+const progressStoreKey = "habitProgress";
+
+const loadProgress = () => {
+  const saved = localStorage.getItem(progressStoreKey);
+  if (!saved) {
+    currentCount.value = 0;
+    return;
+  }
+
+  try {
+    const data = JSON.parse(saved) as Record<string, number>;
+    currentCount.value = data[progressKey.value] || 0;
+  } catch {
+    currentCount.value = 0;
+  }
+};
+
+const saveProgress = () => {
+  const saved = localStorage.getItem(progressStoreKey);
+  const data = saved ? (JSON.parse(saved) as Record<string, number>) : {};
+  data[progressKey.value] = currentCount.value;
+  localStorage.setItem(progressStoreKey, JSON.stringify(data));
+};
 
 const colorStore = useColorStore();
 const colorData = computed(() => colorStore.getColorData(props.habit.color));
 
-const currentCount = ref<number>(0);
-
 function addCount() {
-  if (props.currentCount < props.habit.target) {
-    emit("update-progress", props.currentCount + 1);
+  if (currentCount.value < props.habit.target) {
+    currentCount.value++;
   }
 }
 
 const fillPercentage = computed(() => {
-  return (props.currentCount / props.habit.target) * 100;
+  return (currentCount.value / props.habit.target) * 100;
 });
+
+watch(currentCount, saveProgress);
+watch(() => props.selectedDate, loadProgress, { immediate: true });
+
+onMounted(loadProgress);
 </script>
