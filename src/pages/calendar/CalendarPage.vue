@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div class="px-3">
     <h1 class="mb-6 text-center text-2xl font-medium">Calendar</h1>
-    <div class="m-2 rounded-2xl bg-gray-200 px-5 py-3">
+    <div
+      class="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm"
+    >
       <div class="flex items-center justify-between">
         <button @click="previousMonth"><AngleLeft class="size-4" /></button>
         <span class="text-xl font-semibold">
@@ -21,11 +23,14 @@
           <span
             v-for="(item, i) in daysArray"
             :key="i"
-            class="text-center"
+            @click.stop="item.method"
+            class="flex aspect-square items-center justify-center text-center"
             :class="{
               'text-gray-400': !item.isCurrentMonth,
-              'rounded-full bg-blue-500 text-white':
+              'rounded-full border border-orange-400':
                 item.date.toDateString() === today.toDateString(),
+              'rounded-full bg-blue-400 text-white':
+                item.date.toDateString() === selectedDate.toDateString(),
             }"
           >
             {{ item.day }}
@@ -33,24 +38,77 @@
         </div>
       </div>
     </div>
+    <div class="mt-3 flex flex-col gap-3">
+      <HabitCard
+        v-for="habit in filteredHabits"
+        :key="habit.id"
+        :habit="habit"
+        :selected-date="selectedDate"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import HabitCard from "@/components/features/HabitCard.vue";
 import AngleLeft from "@/assets/icons/AngleLeft.vue";
 import AngleRight from "@/assets/icons/AngleRight.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { habitsApi } from "@/api/habits";
 
 type CalendarDay = {
   date: Date;
   day: number;
   isCurrentMonth: boolean;
+  method: () => void;
 };
+
+type Habit = {
+  id: string;
+  icon: string;
+  title: string;
+  description?: string;
+  group: "Health" | "Productivity" | "Sport";
+  color: string;
+  target: number;
+  unit:
+    | "times"
+    | "steps"
+    | "m"
+    | "km"
+    | "ml"
+    | "l"
+    | "g"
+    | "mg"
+    | "sec"
+    | "min"
+    | "hr";
+  trackingType: "count";
+  startDate: string;
+  endDate: string | null;
+};
+
+const userHabits = ref<Habit[]>([]);
 
 const daysOfWeek: string[] = ["M", "T", "W", "T", "F", "S", "S"];
 
 const currentDate = ref(new Date());
+const selectedDate = ref(new Date());
 const today = new Date();
+
+const filteredHabits = computed(() => {
+  if (!userHabits.value.length) return [];
+
+  return userHabits.value.filter((habit) => {
+    const selectedDateStr = selectedDate.value.toISOString().slice(0, 10);
+    const startDateStr = habit.startDate.slice(0, 10);
+    const endDateStr = habit.endDate?.slice(0, 10) || null;
+    const isAfterStart = selectedDateStr >= startDateStr;
+    const isBeforeEnd = !endDateStr || selectedDateStr <= endDateStr;
+
+    return isAfterStart && isBeforeEnd;
+  });
+});
 
 today.setHours(0, 0, 0, 0);
 
@@ -87,6 +145,7 @@ const daysArray = computed<CalendarDay[]>(() => {
       day: previousMonthDays - i,
       isCurrentMonth: false,
       date,
+      method: () => previousMonth(),
     });
   }
 
@@ -96,6 +155,7 @@ const daysArray = computed<CalendarDay[]>(() => {
       day: i,
       isCurrentMonth: true,
       date,
+      method: () => selectDate(date),
     });
   }
 
@@ -107,6 +167,7 @@ const daysArray = computed<CalendarDay[]>(() => {
       day: i,
       isCurrentMonth: false,
       date,
+      method: () => nextMonth(),
     });
   }
 
@@ -120,4 +181,22 @@ function nextMonth() {
 function previousMonth() {
   currentDate.value = new Date(currentYear.value, currentMonth.value - 1, 1);
 }
+
+function selectDate(date: Date) {
+  selectedDate.value = new Date(date);
+}
+
+async function getHabits() {
+  try {
+    const response = await habitsApi.getUserHabits();
+    userHabits.value = response.data;
+    console.log("Data fetched successfully: ", response);
+  } catch (error) {
+    console.log("Error fetching user habits: ", error);
+  }
+}
+
+onMounted(() => {
+  getHabits();
+});
 </script>
