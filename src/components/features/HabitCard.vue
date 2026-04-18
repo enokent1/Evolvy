@@ -25,20 +25,34 @@
         </span>
       </div>
     </div>
-    <button
-      v-if="currentCount !== habit.target"
-      @click.prevent="addCount"
-      class="hover:cursor-pointer"
-    >
-      <Add class="size-5" />
-    </button>
-    <span v-else class="z-10 flex items-center justify-center">
-      <Check class="size-4" />
-    </span>
+    <div class="flex items-center">
+      <Transition name="slide">
+        <AddCounter
+          v-show="showCounter"
+          class="z-10 mr-1"
+          :target="habit.target"
+          @add-count="addCount($event)"
+        />
+      </Transition>
+      <button
+        v-if="currentCount !== habit.target"
+        @click.prevent="showCounter = !showCounter"
+        class="hover:cursor-pointer"
+      >
+        <Add
+          class="size-5 transition-all"
+          :class="{ 'rotate-45': showCounter }"
+        />
+      </button>
+      <span v-else class="z-10 flex items-center justify-center">
+        <Check class="size-4" />
+      </span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import AddCounter from "./AddCounter.vue";
 import Add from "@/assets/icons/Add.vue";
 import Check from "@/assets/icons/Check.vue";
 import { useColorStore } from "@/stores/colorStore";
@@ -73,6 +87,8 @@ const props = defineProps<{
   habit: Habit;
   selectedDate?: Date;
 }>();
+
+const showCounter = ref<boolean>(false);
 
 const currentCount = ref<number>(0);
 const progressKey = computed(() => {
@@ -111,9 +127,14 @@ const saveProgress = () => {
 const colorStore = useColorStore();
 const colorData = computed(() => colorStore.getColorData(props.habit.color));
 
-function addCount() {
+function addCount(value: number) {
   if (currentCount.value < props.habit.target) {
-    currentCount.value++;
+    if (currentCount.value + value > props.habit.target) {
+      currentCount.value = props.habit.target;
+    } else {
+      currentCount.value += value;
+    }
+    showCounter.value = false;
   }
 }
 
@@ -126,3 +147,30 @@ watch(() => props.selectedDate, loadProgress, { immediate: true });
 
 onMounted(loadProgress);
 </script>
+
+<style>
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateY(50%);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-50%);
+}
+
+.slide-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
