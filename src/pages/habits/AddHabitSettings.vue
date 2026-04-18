@@ -50,27 +50,7 @@
     </card-wrapper>
 
     <card-wrapper>
-      <div
-        class="flex items-center justify-between border-b border-gray-400 pb-3"
-      >
-        <span>Periodicity</span>
-        <div class="flex gap-2">
-          <button
-            v-for="option in periodicityOptions"
-            :key="option.name"
-            class="rounded-full px-4 py-1 text-sm"
-            :class="
-              selectedPeriodicity === option.value
-                ? [colorStore.bgClass, 'text-white']
-                : 'bg-gray-300'
-            "
-            @click="updatePeriodicity(option.value)"
-          >
-            {{ option.name }}
-          </button>
-        </div>
-      </div>
-      <div class="flex items-center justify-between pt-3">
+      <div class="flex items-center justify-between">
         <span>Goal value</span>
         <div class="flex items-center gap-2">
           <input
@@ -88,8 +68,7 @@
         </div>
       </div>
       <p class="mt-2 text-xs text-amber-600">
-        *Complete {{ habit.target }} {{ habit.unit }} each
-        {{ habit.periodicity }}
+        *Complete {{ habit.target }} {{ habit.unit }} each day
       </p>
     </card-wrapper>
 
@@ -189,8 +168,6 @@ import { onMounted, ref, provide } from "vue";
 import router from "@/app/router";
 import { habitsApi } from "@/api/habits";
 
-type Periodicity = "day" | "week" | "month";
-
 type Habit = {
   id: string;
   icon: string;
@@ -200,7 +177,6 @@ type Habit = {
   group: string;
   target: number;
   unit: string;
-  periodicity: Periodicity;
   startDate: string;
   endDate: string | null;
 };
@@ -208,11 +184,6 @@ type Habit = {
 type ResultMessage = {
   type: "success" | "error";
   message: string;
-};
-
-type PeriodicityOption = {
-  name: string;
-  value: Periodicity;
 };
 
 type DateSelectorMode = "start" | "end";
@@ -230,8 +201,6 @@ const toggleIcon = ref<boolean>(false);
 const toggleUnit = ref<boolean>(false);
 const toggleCalendar = ref<boolean>(false);
 
-const selectedPeriodicity = ref<Periodicity>("day");
-
 const isSending = ref<boolean>(false);
 const showResultMessage = ref<boolean>(false);
 const resultMessageData = ref<ResultMessage>({
@@ -240,19 +209,6 @@ const resultMessageData = ref<ResultMessage>({
 });
 
 const colorStore = useColorStore();
-
-const periodicityOptions: PeriodicityOption[] = [
-  { name: "Daily", value: "day" },
-  { name: "Weekly", value: "week" },
-  { name: "Monthly", value: "month" },
-];
-
-const updatePeriodicity = (option: Periodicity): void => {
-  if (habit.value) {
-    habit.value.periodicity = option;
-  }
-  selectedPeriodicity.value = option;
-};
 
 const startDate = ref<Date>(new Date());
 const endDate = ref<EndDateValue>("No End Date");
@@ -297,7 +253,7 @@ provide("selected-date", setSelectedDate);
 
 async function fetchHabitWithId(habitId: string) {
   try {
-    const response = await habitsApi.getById(habitId)
+    const response = await habitsApi.getById(habitId);
     habit.value = response.data;
     console.log("Fetched habit: ", habit.value);
   } catch (error) {
@@ -322,6 +278,7 @@ const prepareHabitForSubmit = () => {
 
   return {
     ...habit.value,
+    color: "blue-500",
     startDate: startDate.value.toISOString(),
     endDate:
       endDate.value === "No End Date" ? null : endDate.value.toISOString(),
@@ -349,7 +306,7 @@ async function addHabit() {
     const habitToSubmit = prepareHabitForSubmit();
     if (!habitToSubmit) return;
 
-    const response = await habitsApi.create(habitToSubmit)
+    const response = await habitsApi.create(habitToSubmit);
     console.log("Habit added: ", response.data);
 
     resultMessageData.value = {
