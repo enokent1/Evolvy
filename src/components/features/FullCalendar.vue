@@ -2,13 +2,13 @@
   <div class="m-2 rounded-2xl px-5 py-3">
     <div class="flex items-center justify-between">
       <button @click.stop="previousMonth">
-        <AngleLeft class="size-4 hover:cursor-pointer" />
+        <SvgIcon name="chevron-left" class="size-4 hover:cursor-pointer" />
       </button>
       <span class="text-xl font-semibold">
         {{ monthName }}, {{ currentYear }}
       </span>
       <button @click.stop="nextMonth">
-        <AngleRight class="size-4 hover:cursor-pointer" />
+        <SvgIcon name="chevron-right" class="size-4 hover:cursor-pointer" />
       </button>
     </div>
     <div>
@@ -39,8 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import AngleLeft from "@/assets/icons/AngleLeft.vue";
-import AngleRight from "@/assets/icons/AngleRight.vue";
+import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { ref, computed, inject, watch } from "vue";
 
 const props = defineProps<{

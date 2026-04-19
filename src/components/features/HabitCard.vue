@@ -39,13 +39,14 @@
         @click.prevent="showCounter = !showCounter"
         class="hover:cursor-pointer"
       >
-        <Add
+        <SvgIcon
+          name="plus-circle"
           class="size-5 transition-all"
           :class="{ 'rotate-45': showCounter }"
         />
       </button>
       <span v-else class="z-10 flex items-center justify-center">
-        <Check class="size-4" />
+        <SvgIcon name="check" class="size-4" />
       </span>
     </div>
   </div>
@@ -53,8 +54,7 @@
 
 <script setup lang="ts">
 import AddCounter from "./AddCounter.vue";
-import Add from "@/assets/icons/Add.vue";
-import Check from "@/assets/icons/Check.vue";
+import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { useColorStore } from "@/stores/colorStore";
 import { ref, computed, watch, onMounted } from "vue";
 

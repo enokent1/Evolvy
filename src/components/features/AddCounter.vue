@@ -6,13 +6,13 @@
       v-model="inputValue"
     />
     <button @click.stop="($emit('addCount', inputValue), (inputValue = 0))">
-      <Add class="size-5" />
+      <SvgIcon name="plus-circle" class="size-5" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import Add from "@/assets/icons/Add.vue";
+import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { ref } from "vue";
 
 const props = defineProps({

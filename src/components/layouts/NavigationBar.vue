@@ -8,30 +8,25 @@
       :key="link.name"
       class="transition-transform hover:scale-110"
     >
-      <component :is="link.icon" class="size-8 text-white" />
+      <SvgIcon :name="link.icon" class="size-8 text-white" />
     </RouterLink>
   </nav>
 </template>
 
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import type { Component } from "vue";
-
-import HomeIcon from "@/assets/icons/HomeIcon.vue";
-import ListIcon from "@/assets/icons/ListIcon.vue";
-import CalendarIcon from "@/assets/icons/CalendarIcon.vue";
-import UserIcon from "@/assets/icons/UserIcon.vue";
+import SvgIcon from "@/assets/icons/SvgIcon.vue";
 
 type NavLink = {
   route: string;
   name: string;
-  icon: Component;
+  icon: string;
 };
 
 const links: NavLink[] = [
-  { route: "/", name: "home", icon: HomeIcon },
-  { route: "/habits", name: "habits", icon: ListIcon },
-  { route: "/calendar", name: "calendar", icon: CalendarIcon },
-  { route: "/profile", name: "profile", icon: UserIcon },
+  { route: "/", name: "home", icon: "home" },
+  { route: "/habits", name: "habits", icon: "list" },
+  { route: "/calendar", name: "calendar", icon: "calendar" },
+  { route: "/profile", name: "profile", icon: "user" },
 ];
 </script>

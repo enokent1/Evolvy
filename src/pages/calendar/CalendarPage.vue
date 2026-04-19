@@ -5,11 +5,11 @@
       class="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm"
     >
       <div class="flex items-center justify-between">
-        <button @click="previousMonth"><AngleLeft class="size-4" /></button>
+        <button @click="previousMonth"><SvgIcon name="chevron-left" class="size-4" /></button>
         <span class="text-xl font-semibold">
           {{ monthName }}, {{ currentYear }}
         </span>
-        <button @click="nextMonth"><AngleRight class="size-4" /></button>
+        <button @click="nextMonth"><SvgIcon name="chevron-right" class="size-4" /></button>
       </div>
       <div>
         <div class="mt-2 grid grid-cols-7 gap-3">
@@ -51,8 +51,7 @@
 
 <script setup lang="ts">
 import HabitCard from "@/components/features/HabitCard.vue";
-import AngleLeft from "@/assets/icons/AngleLeft.vue";
-import AngleRight from "@/assets/icons/AngleRight.vue";
+import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { ref, computed, onMounted } from "vue";
 import { habitsApi } from "@/api/habits";
 
