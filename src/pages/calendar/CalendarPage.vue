@@ -5,11 +5,15 @@
       class="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm"
     >
       <div class="flex items-center justify-between">
-        <button @click="previousMonth"><SvgIcon name="chevron-left" class="size-4" /></button>
+        <button @click="previousMonth">
+          <SvgIcon name="chevron-left" class="size-4" />
+        </button>
         <span class="text-xl font-semibold">
           {{ monthName }}, {{ currentYear }}
         </span>
-        <button @click="nextMonth"><SvgIcon name="chevron-right" class="size-4" /></button>
+        <button @click="nextMonth">
+          <SvgIcon name="chevron-right" class="size-4" />
+        </button>
       </div>
       <div>
         <div class="mt-2 grid grid-cols-7 gap-3">
@@ -54,38 +58,7 @@ import HabitCard from "@/components/features/HabitCard.vue";
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { ref, computed, onMounted } from "vue";
 import { habitsApi } from "@/api/habits";
-
-type CalendarDay = {
-  date: Date;
-  day: number;
-  isCurrentMonth: boolean;
-  onClick: () => void;
-};
-
-type Habit = {
-  id: string;
-  icon: string;
-  title: string;
-  description?: string;
-  group: "Health" | "Productivity" | "Sport";
-  color: string;
-  target: number;
-  unit:
-    | "times"
-    | "steps"
-    | "m"
-    | "km"
-    | "ml"
-    | "l"
-    | "g"
-    | "mg"
-    | "sec"
-    | "min"
-    | "hr";
-  trackingType: "count";
-  startDate: string;
-  endDate: string | null;
-};
+import { Habit, CalendarDay } from "@/types";
 
 const userHabits = ref<Habit[]>([]);
 

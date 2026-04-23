@@ -16,12 +16,7 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
-
-type NavLink = {
-  route: string;
-  name: string;
-  icon: string;
-};
+import { NavLink } from "@/types";
 
 const navLinks: NavLink[] = [
   { route: "/", name: "home", icon: "home" },

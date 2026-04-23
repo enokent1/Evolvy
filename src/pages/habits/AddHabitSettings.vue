@@ -168,27 +168,7 @@ import { useRoute } from "vue-router";
 import { onMounted, ref, provide } from "vue";
 import router from "@/app/router";
 import { habitsApi } from "@/api/habits";
-
-type Habit = {
-  id: string;
-  icon: string;
-  title: string;
-  description?: string;
-  color?: string;
-  group: string;
-  target: number;
-  unit: string;
-  startDate: string;
-  endDate: string | null;
-};
-
-type ResultMessage = {
-  type: "success" | "error";
-  message: string;
-};
-
-type DateSelectorMode = "startDate" | "endDate";
-type EndDate = Date | "No End Date";
+import { Habit, ResultMessage, DateSelectorMode, EndDate } from "@/types";
 
 const route = useRoute();
 const id = Array.isArray(route.params.id)

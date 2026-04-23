@@ -21,7 +21,7 @@
           {{ weekDay }}
         </span>
         <span
-          v-for="(calendarDay) in daysArray"
+          v-for="calendarDay in daysArray"
           :key="calendarDay.day"
           @click.stop="calendarDay.onClick"
           class="aspect-square text-center transition-transform hover:scale-110 hover:cursor-pointer"
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { ref, computed, inject, watch } from "vue";
+import { CalendarDay } from "@/types";
 
 const props = defineProps<{
   defaultDate: Date;
@@ -50,13 +51,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   "selected-date": [date: Date];
 }>();
-
-type CalendarDay = {
-  date: Date;
-  day: number;
-  isCurrentMonth: boolean;
-  onClick: () => void;
-};
 
 const weekDayLabelsShort: string[] = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -147,9 +141,9 @@ function previousMonth(): void {
 }
 
 const onDateSelected =
-  inject<(date: Date | "No End Date" | null, mode: "startDate" | "endDate") => void>(
-    "selected-date",
-  );
+  inject<
+    (date: Date | "No End Date" | null, mode: "startDate" | "endDate") => void
+  >("selected-date");
 
 function updateSelectedDate(date: Date): void {
   selectedDate.value = new Date(date);

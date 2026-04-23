@@ -19,32 +19,7 @@ import HabitCard from "@/components/features/HabitCard.vue";
 
 import { habitsApi } from "@/api/habits";
 import { ref, onMounted, computed } from "vue";
-
-type Habit = {
-  id: string;
-  icon: string;
-  title: string;
-  description?: string;
-  group: "Health" | "Productivity" | "Sport";
-  color: string;
-  target: number;
-  unit:
-    | "times"
-    | "steps"
-    | "m"
-    | "km"
-    | "ml"
-    | "l"
-    | "g"
-    | "mg"
-    | "sec"
-    | "min"
-    | "hr";
-  trackingType: "count";
-  periodicity: "day" | "week" | "month";
-  startDate: string;
-  endDate: string | null;
-};
+import { Habit } from "@/types";
 
 const userHabits = ref<Habit[]>([]);
 

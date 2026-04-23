@@ -15,18 +15,13 @@
 import HabitLink from "@/components/features/HabitLink.vue";
 import { habitsApi } from "@/api/habits";
 import { ref, onMounted } from "vue";
-
-type HabitItem = {
-  id: string;
-  icon: string;
-  title: string;
-};
+import { HabitItem } from "@/types";
 
 const habitsList = ref<HabitItem[]>([]);
 
 async function fetchAndSaveData(): Promise<void> {
   try {
-    const response = await habitsApi.getAllGlobalHabits()
+    const response = await habitsApi.getAllGlobalHabits();
     localStorage.setItem("habits", JSON.stringify(response.data));
     habitsList.value = response.data;
   } catch (error) {

@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import ModalWrapper from "../wrappers/ModalWrapper.vue";
+import { Group } from "@/types";
 
 const props = defineProps({
   defaultGroup: {
@@ -29,11 +30,6 @@ const props = defineProps({
     default: "border-blue-500",
   },
 });
-
-type Group = {
-  id: number;
-  name: "Health" | "Productivity" | "Sport";
-};
 
 const groups: Group[] = [
   { id: 1, name: "Health" },

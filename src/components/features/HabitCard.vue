@@ -57,31 +57,7 @@ import AddCounter from "./AddCounter.vue";
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
 import { useColorStore } from "@/stores/colorStore";
 import { ref, computed, watch, onMounted } from "vue";
-
-type Habit = {
-  id: string;
-  icon: string;
-  title: string;
-  description?: string;
-  group: "Health" | "Productivity" | "Sport";
-  color: string;
-  target: number;
-  unit:
-    | "times"
-    | "steps"
-    | "m"
-    | "km"
-    | "ml"
-    | "l"
-    | "g"
-    | "mg"
-    | "sec"
-    | "min"
-    | "hr";
-  trackingType: "count";
-  startDate: string;
-  endDate: string | null;
-};
+import { Habit } from "@/types";
 
 const props = defineProps<{
   habit: Habit;

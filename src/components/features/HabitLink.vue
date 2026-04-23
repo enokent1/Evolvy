@@ -7,18 +7,19 @@
         <span class="text-2xl">{{ habit.icon }}</span>
         <span>{{ habit.title }}</span>
       </div>
-      <SvgIcon name="plus" class="size-5 text-gray-400 transition hover:text-gray-800" />
+      <SvgIcon
+        name="plus"
+        class="size-5 text-gray-400 transition hover:text-gray-800"
+      />
     </div>
   </RouterLink>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
+import { HabitItem } from "@/types";
 
-const props = defineProps({
-  habit: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{
+  habit: HabitItem;
+}>();
 </script>
