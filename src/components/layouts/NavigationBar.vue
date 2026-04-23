@@ -3,7 +3,7 @@
     class="fixed right-0 bottom-4 left-0 mx-auto flex w-fit gap-10 rounded-full bg-linear-to-r from-emerald-500 to-teal-500 px-8 py-4"
   >
     <RouterLink
-      v-for="link in links"
+      v-for="link in navLinks"
       :to="link.route"
       :key="link.name"
       class="transition-transform hover:scale-110"
@@ -23,7 +23,7 @@ type NavLink = {
   icon: string;
 };
 
-const links: NavLink[] = [
+const navLinks: NavLink[] = [
   { route: "/", name: "home", icon: "home" },
   { route: "/habits", name: "habits", icon: "list" },
   { route: "/calendar", name: "calendar", icon: "calendar" },

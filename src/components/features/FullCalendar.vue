@@ -15,23 +15,23 @@
       <div class="mt-2 grid grid-cols-7 gap-3">
         <span
           class="aspect-square text-center font-medium hover:cursor-default"
-          v-for="dayOfWeek in daysOfWeek"
-          :key="dayOfWeek"
+          v-for="weekDay in weekDayLabelsShort"
+          :key="weekDay"
         >
-          {{ dayOfWeek }}
+          {{ weekDay }}
         </span>
         <span
-          v-for="(item, i) in daysArray"
-          :key="i"
-          @click.stop="item.method"
+          v-for="(calendarDay) in daysArray"
+          :key="calendarDay.day"
+          @click.stop="calendarDay.onClick"
           class="aspect-square text-center transition-transform hover:scale-110 hover:cursor-pointer"
           :class="{
-            'text-gray-400': !item.isCurrentMonth,
+            'text-gray-400': !calendarDay.isCurrentMonth,
             'rounded-full bg-blue-500 text-white':
-              item.date.toDateString() === selectedDate.toDateString(),
+              calendarDay.date.toDateString() === selectedDate.toDateString(),
           }"
         >
-          {{ item.day }}
+          {{ calendarDay.day }}
         </span>
       </div>
     </div>
@@ -44,7 +44,7 @@ import { ref, computed, inject, watch } from "vue";
 
 const props = defineProps<{
   defaultDate: Date;
-  mode: "start" | "end";
+  mode: "startDate" | "endDate";
 }>();
 
 const emit = defineEmits<{
@@ -55,10 +55,10 @@ type CalendarDay = {
   date: Date;
   day: number;
   isCurrentMonth: boolean;
-  method: () => void;
+  onClick: () => void;
 };
 
-const daysOfWeek: string[] = ["M", "T", "W", "T", "F", "S", "S"];
+const weekDayLabelsShort: string[] = ["M", "T", "W", "T", "F", "S", "S"];
 
 const selectedDate = ref(new Date(props.defaultDate));
 const currentMonth = ref(props.defaultDate.getMonth());
@@ -93,17 +93,17 @@ const daysArray = computed<CalendarDay[]>(() => {
   const totalDays = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const previousMonthDays = getDaysInMonth(year, month - 1);
+  const daysInPreviousMonth = getDaysInMonth(year, month - 1);
 
   const days: CalendarDay[] = [];
 
   for (let i = firstDay - 1; i >= 0; i--) {
-    const date = new Date(year, month - 1, previousMonthDays - i);
+    const date = new Date(year, month - 1, daysInPreviousMonth - i);
     days.push({
-      day: previousMonthDays - i,
+      day: daysInPreviousMonth - i,
       isCurrentMonth: false,
       date,
-      method: () => previousMonth(),
+      onClick: () => previousMonth(),
     });
   }
 
@@ -113,19 +113,19 @@ const daysArray = computed<CalendarDay[]>(() => {
       day: i,
       isCurrentMonth: true,
       date,
-      method: () => selectDate(date),
+      onClick: () => updateSelectedDate(date),
     });
   }
 
-  const remainingDays = 42 - days.length;
+  const daysInNextMonth = 42 - days.length;
 
-  for (let i = 1; i <= remainingDays; i++) {
+  for (let i = 1; i <= daysInNextMonth; i++) {
     const date = new Date(year, month + 1, i);
     days.push({
       day: i,
       isCurrentMonth: false,
       date,
-      method: () => nextMonth(),
+      onClick: () => nextMonth(),
     });
   }
 
@@ -146,17 +146,17 @@ function previousMonth(): void {
   }
 }
 
-const selectDateInjected =
-  inject<(date: Date | "No End Date" | null, mode: "start" | "end") => void>(
+const onDateSelected =
+  inject<(date: Date | "No End Date" | null, mode: "startDate" | "endDate") => void>(
     "selected-date",
   );
 
-function selectDate(date: Date): void {
+function updateSelectedDate(date: Date): void {
   selectedDate.value = new Date(date);
   currentMonth.value = date.getMonth();
   currentYear.value = date.getFullYear();
-  if (selectDateInjected) {
-    selectDateInjected(date, props.mode);
+  if (onDateSelected) {
+    onDateSelected(date, props.mode);
   }
 }
 </script>

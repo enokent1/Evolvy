@@ -1,5 +1,5 @@
 <template>
-  <div v-if="habit" class="flex flex-col gap-6 p-5">
+  <div v-if="habitData" class="flex flex-col gap-6 p-5">
     <div
       class="relative mx-auto mb-2 flex w-full items-center justify-center gap-2"
     >
@@ -9,8 +9,8 @@
           class="size-6 transition-all hover:scale-110 hover:cursor-pointer"
         />
       </button>
-      <span class="text-2xl">{{ habit.icon }}</span>
-      <h1 class="text-2xl font-medium">{{ habit.title }}</h1>
+      <span class="text-2xl">{{ habitData.icon }}</span>
+      <h1 class="text-2xl font-medium">{{ habitData.title }}</h1>
     </div>
 
     <card-wrapper>
@@ -20,18 +20,18 @@
           :class="colorStore.borderClass"
           @click="toggleIcon = true"
         >
-          <span class="text-4xl">{{ habit.icon }}</span>
+          <span class="text-4xl">{{ habitData.icon }}</span>
         </div>
         <div class="w-full">
           <input
             class="w-full border-b border-gray-400 py-1"
             type="text"
-            v-model="habit.title"
+            v-model="habitData.title"
           />
           <input
             class="w-full py-1"
             type="text"
-            v-model="habit.description"
+            v-model="habitData.description"
             placeholder="Description (Optional)"
           />
         </div>
@@ -45,7 +45,7 @@
       <div class="flex justify-between py-2">
         <span>Group</span>
         <button @click="toggleGroup = true">
-          {{ habit.group }}
+          {{ habitData.group }}
         </button>
       </div>
     </card-wrapper>
@@ -57,19 +57,19 @@
           <input
             type="number"
             placeholder="goal"
-            v-model="habit.target"
+            v-model="habitData.target"
             class="w-16 rounded-full bg-gray-300 px-2 py-1 text-center text-sm"
           />
           <button
             class="rounded-full bg-gray-300 px-4 py-1 text-sm text-gray-600"
             @click="toggleUnit = true"
           >
-            {{ habit.unit }}
+            {{ habitData.unit }}
           </button>
         </div>
       </div>
       <p class="mt-2 text-xs text-amber-600">
-        *Complete {{ habit.target }} {{ habit.unit }} each day
+        *Complete {{ habitData.target }} {{ habitData.unit }} each day
       </p>
     </card-wrapper>
 
@@ -106,7 +106,7 @@
       <IconSelectorModal
         v-if="toggleIcon"
         @close-modal="toggleIcon = false"
-        @selected-icon="habit.icon = $event"
+        @selected-icon="habitData.icon = $event"
       />
     </Transition>
     <Transition name="scale">
@@ -120,8 +120,8 @@
       <GroupSelectorModal
         v-if="toggleGroup"
         @close-modal="toggleGroup = false"
-        @selected-group="habit.group = $event"
-        :default-group="habit.group"
+        @selected-group="habitData.group = $event"
+        :default-group="habitData.group"
         :color="colorStore.borderClass"
       />
     </Transition>
@@ -129,21 +129,21 @@
       <UnitSelectorModal
         v-if="toggleUnit"
         @close-modal="toggleUnit = false"
-        @selected-unit="habit.unit = $event"
+        @selected-unit="habitData.unit = $event"
       />
     </Transition>
     <Transition name="scale">
       <DateSelectorModal
         v-if="toggleCalendar"
-        :date-selector-params="dateSelectorProps"
+        :date-picker-config="datePickerConfig"
         @close-modal="toggleCalendar = false"
       />
     </Transition>
     <Transition name="scale">
       <ShowResultMessageModal
         v-if="showResultMessage"
-        :type="resultMessageData.type"
-        :message="resultMessageData.message"
+        :type="resultMessage.type"
+        :message="resultMessage.message"
         @router-back="router.back()"
         @close-modal="showResultMessage = false"
       />
@@ -187,14 +187,14 @@ type ResultMessage = {
   message: string;
 };
 
-type DateSelectorMode = "start" | "end";
-type EndDateValue = Date | "No End Date";
+type DateSelectorMode = "startDate" | "endDate";
+type EndDate = Date | "No End Date";
 
 const route = useRoute();
 const id = Array.isArray(route.params.id)
   ? route.params.id[0]
   : route.params.id;
-const habit = ref<Habit | null>(null);
+const habitData = ref<Habit | null>(null);
 
 const toggleColor = ref<boolean>(false);
 const toggleGroup = ref<boolean>(false);
@@ -204,7 +204,7 @@ const toggleCalendar = ref<boolean>(false);
 
 const isSending = ref<boolean>(false);
 const showResultMessage = ref<boolean>(false);
-const resultMessageData = ref<ResultMessage>({
+const resultMessage = ref<ResultMessage>({
   type: "success",
   message: "",
 });
@@ -212,36 +212,36 @@ const resultMessageData = ref<ResultMessage>({
 const colorStore = useColorStore();
 
 const startDate = ref<Date>(new Date());
-const endDate = ref<EndDateValue>("No End Date");
+const endDate = ref<EndDate>("No End Date");
 
-const dateSelectorProps = ref({
-  mode: "start" as DateSelectorMode,
+const datePickerConfig = ref({
+  mode: "startDate" as DateSelectorMode,
   value: null as Date | null,
 });
 
 const openStartDatePicker = () => {
-  dateSelectorProps.value = {
-    mode: "start",
+  datePickerConfig.value = {
+    mode: "startDate",
     value: startDate.value,
   };
   toggleCalendar.value = true;
 };
 
 const openEndDatePicker = () => {
-  dateSelectorProps.value = {
-    mode: "end",
+  datePickerConfig.value = {
+    mode: "endDate",
     value: endDate.value === "No End Date" ? null : endDate.value,
   };
   toggleCalendar.value = true;
 };
 
-const setSelectedDate = (
+const handleDateSelection = (
   result: Date | "No End Date" | null,
   mode: DateSelectorMode,
 ) => {
-  if (mode === "start" && result instanceof Date) {
+  if (mode === "startDate" && result instanceof Date) {
     startDate.value = result;
-  } else if (mode === "end") {
+  } else if (mode === "endDate") {
     if (result === "No End Date") {
       endDate.value = "No End Date";
     } else if (result instanceof Date) {
@@ -250,13 +250,13 @@ const setSelectedDate = (
   }
 };
 
-provide("selected-date", setSelectedDate);
+provide("selected-date", handleDateSelection);
 
 async function fetchHabitWithId(habitId: string) {
   try {
-    const response = await habitsApi.getById(habitId);
-    habit.value = response.data;
-    console.log("Fetched habit: ", habit.value);
+    const response = await habitsApi.getGlobalHabitById(habitId);
+    habitData.value = response.data;
+    console.log("Fetched habit: ", habitData.value);
   } catch (error) {
     console.log("Error: ", error);
     throw error;
@@ -269,16 +269,16 @@ onMounted(() => {
 
 function setColorTheme(colorKey: string): void {
   colorStore.setColor(colorKey);
-  if (habit.value) {
-    habit.value.color = colorKey;
+  if (habitData.value) {
+    habitData.value.color = colorKey;
   }
 }
 
 const prepareHabitForSubmit = () => {
-  if (!habit.value) return null;
+  if (!habitData.value) return null;
 
   return {
-    ...habit.value,
+    ...habitData.value,
     color: "blue-500",
     startDate: startDate.value.toISOString(),
     endDate:
@@ -288,7 +288,7 @@ const prepareHabitForSubmit = () => {
 
 const validateDates = (): boolean => {
   if (endDate.value !== "No End Date" && endDate.value < startDate.value) {
-    resultMessageData.value = {
+    resultMessage.value = {
       type: "error",
       message: "End date cannot be earlier than start date",
     };
@@ -307,10 +307,10 @@ async function addHabit() {
     const habitToSubmit = prepareHabitForSubmit();
     if (!habitToSubmit) return;
 
-    const response = await habitsApi.create(habitToSubmit);
+    const response = await habitsApi.createUserHabit(habitToSubmit);
     console.log("Habit added: ", response.data);
 
-    resultMessageData.value = {
+    resultMessage.value = {
       type: "success",
       message: "Habit added!",
     };
@@ -318,7 +318,7 @@ async function addHabit() {
     showResultMessage.value = true;
   } catch (error) {
     console.log("Error: ", error);
-    resultMessageData.value = {
+    resultMessage.value = {
       type: "error",
       message: "Failed to add habit :(",
     };

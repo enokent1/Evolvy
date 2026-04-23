@@ -73,7 +73,7 @@ const filteredHabits = computed(() => {
 
 async function getHabits() {
   try {
-    const response = await habitsApi.getUserHabits();
+    const response = await habitsApi.getAllUserHabits();
     console.log(response.data);
     userHabits.value = response.data;
   } catch (error) {

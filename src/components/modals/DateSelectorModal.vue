@@ -1,8 +1,8 @@
 <template>
   <modal-wrapper>
     <FullCalendar
-      :default-date="props.dateSelectorParams.value || new Date()"
-      :mode="props.dateSelectorParams.mode"
+      :default-date="props.datePickerConfig.value || new Date()"
+      :mode="props.datePickerConfig.mode"
     />
   </modal-wrapper>
 </template>
@@ -12,8 +12,8 @@ import ModalWrapper from "../wrappers/ModalWrapper.vue";
 import FullCalendar from "../features/FullCalendar.vue";
 
 const props = defineProps<{
-  dateSelectorParams: {
-    mode: "start" | "end";
+  datePickerConfig: {
+    mode: "startDate" | "endDate";
     value: Date | null;
   };
 }>();

@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 
 const API_URL = 'https://6994c147b081bc23e9c140ad.mockapi.io/habits'
 
-async function seed() {
+async function seedInitialData() {
     try {
         const file = await fs.readFile(new URL('../data/initialData.json', import.meta.url));
         let data = JSON.parse(file)
@@ -36,4 +36,4 @@ async function seed() {
     }
 }
 
-seed()
+seedInitialData()

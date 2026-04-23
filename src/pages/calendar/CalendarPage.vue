@@ -15,25 +15,25 @@
         <div class="mt-2 grid grid-cols-7 gap-3">
           <span
             class="text-center font-medium"
-            v-for="dayOfWeek in daysOfWeek"
-            :key="dayOfWeek"
+            v-for="weekDay in weekDayLabelsShort"
+            :key="weekDay"
           >
-            {{ dayOfWeek }}
+            {{ weekDay }}
           </span>
           <span
-            v-for="(item, i) in daysArray"
-            :key="i"
-            @click.stop="item.method"
+            v-for="calendarDay in daysArray"
+            :key="calendarDay.day"
+            @click.stop="calendarDay.onClick"
             class="flex aspect-square items-center justify-center text-center"
             :class="{
-              'text-gray-400': !item.isCurrentMonth,
+              'text-gray-400': !calendarDay.isCurrentMonth,
               'rounded-full border border-orange-400':
-                item.date.toDateString() === today.toDateString(),
+                calendarDay.date.toDateString() === today.toDateString(),
               'rounded-full bg-blue-400 text-white':
-                item.date.toDateString() === selectedDate.toDateString(),
+                calendarDay.date.toDateString() === selectedDate.toDateString(),
             }"
           >
-            {{ item.day }}
+            {{ calendarDay.day }}
           </span>
         </div>
       </div>
@@ -59,7 +59,7 @@ type CalendarDay = {
   date: Date;
   day: number;
   isCurrentMonth: boolean;
-  method: () => void;
+  onClick: () => void;
 };
 
 type Habit = {
@@ -89,7 +89,7 @@ type Habit = {
 
 const userHabits = ref<Habit[]>([]);
 
-const daysOfWeek: string[] = ["M", "T", "W", "T", "F", "S", "S"];
+const weekDayLabelsShort: string[] = ["M", "T", "W", "T", "F", "S", "S"];
 
 const currentDate = ref(new Date());
 const selectedDate = ref(new Date());
@@ -134,17 +134,17 @@ const daysArray = computed<CalendarDay[]>(() => {
   const totalDays = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const previousMonthDays = getDaysInMonth(year, month - 1);
+  const daysInPreviousMonth = getDaysInMonth(year, month - 1);
 
   const days: CalendarDay[] = [];
 
   for (let i = firstDay - 1; i >= 0; i--) {
-    const date = new Date(year, month - 1, previousMonthDays - i);
+    const date = new Date(year, month - 1, daysInPreviousMonth - i);
     days.push({
-      day: previousMonthDays - i,
+      day: daysInPreviousMonth - i,
       isCurrentMonth: false,
       date,
-      method: () => previousMonth(),
+      onClick: () => previousMonth(),
     });
   }
 
@@ -154,19 +154,19 @@ const daysArray = computed<CalendarDay[]>(() => {
       day: i,
       isCurrentMonth: true,
       date,
-      method: () => selectDate(date),
+      onClick: () => selectDate(date),
     });
   }
 
-  const remainingDays = 42 - days.length;
+  const daysInNextMonth = 42 - days.length;
 
-  for (let i = 1; i <= remainingDays; i++) {
+  for (let i = 1; i <= daysInNextMonth; i++) {
     const date = new Date(year, month + 1, i);
     days.push({
       day: i,
       isCurrentMonth: false,
       date,
-      method: () => nextMonth(),
+      onClick: () => nextMonth(),
     });
   }
 
@@ -187,7 +187,7 @@ function selectDate(date: Date) {
 
 async function getHabits() {
   try {
-    const response = await habitsApi.getUserHabits();
+    const response = await habitsApi.getAllUserHabits();
     userHabits.value = response.data;
     console.log("Data fetched successfully: ", response);
   } catch (error) {

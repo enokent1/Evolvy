@@ -3,19 +3,19 @@ import axios from "axios";
 const BASE_URL = "https://6994c147b081bc23e9c140ad.mockapi.io"
 
 export const habitsApi = {
-    getAll() {
+    getAllGlobalHabits() {
         return axios.get(`${BASE_URL}/habits`)
     },
 
-    getUserHabits() {
+    getAllUserHabits() {
         return axios.get(`${BASE_URL}/user-habits`)
     },
 
-    getById(id) {
+    getGlobalHabitById(id) {
         return axios.get(`${BASE_URL}/habits/${id}`)
     },
 
-    create(habit) {
+    createUserHabit(habit) {
         return axios.post(`${BASE_URL}/user-habits`, habit)
     }
 }

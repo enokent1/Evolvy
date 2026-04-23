@@ -26,7 +26,7 @@ const habitsList = ref<HabitItem[]>([]);
 
 async function fetchAndSaveData(): Promise<void> {
   try {
-    const response = await habitsApi.getAll()
+    const response = await habitsApi.getAllGlobalHabits()
     localStorage.setItem("habits", JSON.stringify(response.data));
     habitsList.value = response.data;
   } catch (error) {
