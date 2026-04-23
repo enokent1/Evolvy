@@ -30,7 +30,7 @@
         <AddCounter
           v-show="showCounter"
           class="z-10 mr-1"
-          :target="habit.target"
+          :max-value="habit.target"
           @add-count="addCount($event)"
         />
       </Transition>
@@ -128,7 +128,7 @@ const colorStore = useColorStore();
 const colorData = computed(() => colorStore.getColorData(props.habit.color));
 
 function addCount(value: number) {
-  if (currentCount.value < props.habit.target) {
+  if (currentCount.value < props.habit.target && value !== null) {
     if (currentCount.value + value > props.habit.target) {
       currentCount.value = props.habit.target;
     } else {
