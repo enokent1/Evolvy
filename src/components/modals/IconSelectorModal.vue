@@ -2,12 +2,13 @@
   <modal-wrapper>
     <div class="grid grid-cols-5 gap-5">
       <button
-        v-for="iconKey in iconStore.availableIcons"
+        v-for="iconKey in iconKeys"
         :key="iconKey"
-        @click="$emit('selectedIcon', iconStore.iconMap[iconKey].icon)"
+        @click="$emit('selectedIcon', getIcon(iconKey))"
+        class="hover:cursor-pointer"
       >
         <span class="text-2xl">
-          {{ iconStore.iconMap[iconKey].icon }}
+          {{ getIcon(iconKey) }}
         </span>
       </button>
     </div>
@@ -15,8 +16,9 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import ModalWrapper from "../wrappers/ModalWrapper.vue";
-import { useIconStore } from "@/stores/iconStore";
+import { getAllIconKeys, getIcon } from "@/utils/icons/iconHelpers";
 
-const iconStore = useIconStore();
+const iconKeys = getAllIconKeys();
 </script>

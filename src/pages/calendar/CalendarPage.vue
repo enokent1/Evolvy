@@ -1,7 +1,7 @@
 <template>
   <div class="px-3">
     <h1 class="mb-6 text-center text-2xl font-medium">Calendar</h1>
-    <div
+    <section
       class="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm"
     >
       <div class="flex items-center justify-between">
@@ -24,10 +24,10 @@
           >
             {{ weekDay }}
           </span>
-          <span
+          <button
             v-for="calendarDay in daysArray"
             :key="calendarDay.day"
-            @click.stop="calendarDay.onClick"
+            @click="calendarDay.onClick"
             class="flex aspect-square items-center justify-center text-center"
             :class="{
               'text-gray-400': !calendarDay.isCurrentMonth,
@@ -38,10 +38,10 @@
             }"
           >
             {{ calendarDay.day }}
-          </span>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
     <div class="mt-3 flex flex-col gap-3">
       <HabitCard
         v-for="habit in filteredHabits"
@@ -68,7 +68,7 @@ const currentDate = ref(new Date());
 const selectedDate = ref(new Date());
 const today = new Date();
 
-const filteredHabits = computed(() => {
+const filteredHabits = computed<Habit[]>(() => {
   if (!userHabits.value.length) return [];
 
   return userHabits.value.filter((habit) => {
@@ -84,19 +84,19 @@ const filteredHabits = computed(() => {
 
 today.setHours(0, 0, 0, 0);
 
-const currentMonth = computed(() => currentDate.value.getMonth());
-const currentYear = computed(() => currentDate.value.getFullYear());
+const currentMonth = computed<number>(() => currentDate.value.getMonth());
+const currentYear = computed<number>(() => currentDate.value.getFullYear());
 
 const monthName = computed<string>(() => {
   const date = new Date(currentYear.value, currentMonth.value);
   return date.toLocaleString("en-US", { month: "long" });
 });
 
-function getDaysInMonth(year: number, month: number) {
+function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function getFirstDayOfMonth(year: number, month: number) {
+function getFirstDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 1).getDay();
 }
 
@@ -146,19 +146,19 @@ const daysArray = computed<CalendarDay[]>(() => {
   return days;
 });
 
-function nextMonth() {
+function nextMonth():void {
   currentDate.value = new Date(currentYear.value, currentMonth.value + 1, 1);
 }
 
-function previousMonth() {
+function previousMonth():void {
   currentDate.value = new Date(currentYear.value, currentMonth.value - 1, 1);
 }
 
-function selectDate(date: Date) {
+function selectDate(date: Date): void {
   selectedDate.value = new Date(date);
 }
 
-async function getHabits() {
+async function getHabits(): Promise<void> {
   try {
     const response = await habitsApi.getAllUserHabits();
     userHabits.value = response.data;

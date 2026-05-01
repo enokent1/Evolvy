@@ -1,12 +1,21 @@
 <template>
-  <div v-if="userHabits">
+  <div v-if="!isLoading">
     <h1 class="mb-6 text-center text-2xl font-medium">Today</h1>
-    <div class="mx-2 flex flex-col gap-3">
+    <div v-if="userHabits.length" class="mx-2 flex flex-col gap-3">
       <HabitCard
         v-for="habit in filteredHabits"
         :key="habit.id"
         :habit="habit"
       />
+    </div>
+    <div
+      v-else
+      class="mx-2 rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-slate-600 shadow-sm"
+    >
+      <p class="text-xl font-medium">No plans today</p>
+      <p class="mt-2 text-sm text-slate-500">
+        Create a habit and it will appear here.
+      </p>
     </div>
   </div>
   <div v-else>
@@ -22,6 +31,7 @@ import { ref, onMounted, computed } from "vue";
 import { Habit } from "@/types";
 
 const userHabits = ref<Habit[]>([]);
+const isLoading = ref<boolean>(false);
 
 const getLocalDateKey = (date: Date | string): string => {
   const d = new Date(date);
@@ -48,11 +58,14 @@ const filteredHabits = computed(() => {
 
 async function getHabits() {
   try {
+    isLoading.value = true;
     const response = await habitsApi.getAllUserHabits();
     console.log(response.data);
     userHabits.value = response.data;
   } catch (error) {
     console.log("Error fetching user habits: ", error);
+  } finally {
+    isLoading.value = false;
   }
 }
 

@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import AddCounter from "./AddCounter.vue";
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
-import { useColorStore } from "@/stores/colorStore";
+import { getColorData } from "@/utils/colors/colorHelpers";
 import { ref, computed, watch, onMounted } from "vue";
 import { Habit } from "@/types";
 
@@ -100,8 +100,7 @@ const saveProgress = () => {
   localStorage.setItem(progressStoreKey, JSON.stringify(data));
 };
 
-const colorStore = useColorStore();
-const colorData = computed(() => colorStore.getColorData(props.habit.color));
+const colorData = computed(() => getColorData(props.habit.color));
 
 function addCount(value: number) {
   if (currentCount.value < props.habit.target && value !== null) {

@@ -15,13 +15,13 @@
 
     <card-wrapper>
       <div class="flex gap-6 border-b border-gray-400 pb-2">
-        <div
-          class="flex aspect-square w-25 items-center justify-center rounded-lg border-2 border-dashed bg-gray-300"
-          :class="colorStore.borderClass"
+        <button
+          class="flex aspect-square w-25 items-center justify-center rounded-lg border-2 border-dashed bg-gray-300 hover:cursor-pointer"
+          :class="borderClass"
           @click="toggleIcon = true"
         >
           <span class="text-4xl">{{ habitData.icon }}</span>
-        </div>
+        </button>
         <div class="w-full">
           <input
             class="w-full border-b border-gray-400 py-1"
@@ -39,7 +39,7 @@
       <div class="flex justify-between border-b border-gray-400 py-2">
         <span>Color</span>
         <button @click="toggleColor = true">
-          <div class="h-5 w-10 rounded-full" :class="colorStore.bgClass"></div>
+          <div class="h-5 w-10 rounded-full" :class="bgClass"></div>
         </button>
       </div>
       <div class="flex justify-between py-2">
@@ -96,7 +96,7 @@
     <button
       @click.prevent="addHabit"
       :disabled="isSending"
-      :class="colorStore.bgClass + ' w-full rounded-full py-2 text-white'"
+      :class="bgClass + ' w-full rounded-full py-2 text-white'"
     >
       <span v-if="isSending">Adding...</span>
       <span v-else>Add habit</span>
@@ -122,7 +122,7 @@
         @close-modal="toggleGroup = false"
         @selected-group="habitData.group = $event"
         :default-group="habitData.group"
-        :color="colorStore.borderClass"
+        :color="borderClass"
       />
     </Transition>
     <Transition name="scale">
@@ -163,9 +163,9 @@ import UnitSelectorModal from "@/components/modals/UnitSelectorModal.vue";
 import DateSelectorModal from "@/components/modals/DateSelectorModal.vue";
 import ShowResultMessageModal from "@/components/modals/ShowResultMessageModal.vue";
 import SvgIcon from "@/assets/icons/SvgIcon.vue";
-import { useColorStore } from "@/stores/colorStore";
+import { getBgClass, getBorderClass } from "@/utils/colors/colorHelpers";
 import { useRoute } from "vue-router";
-import { onMounted, ref, provide } from "vue";
+import { onMounted, ref, provide, computed } from "vue";
 import router from "@/app/router";
 import { habitsApi } from "@/api/habits";
 import { Habit, ResultMessage, DateSelectorMode, EndDate } from "@/types";
@@ -182,14 +182,16 @@ const toggleIcon = ref<boolean>(false);
 const toggleUnit = ref<boolean>(false);
 const toggleCalendar = ref<boolean>(false);
 
+const currentColor = ref<string>("blue-400");
+const borderClass = computed(() => getBorderClass(currentColor.value));
+const bgClass = computed(() => getBgClass(currentColor.value));
+
 const isSending = ref<boolean>(false);
 const showResultMessage = ref<boolean>(false);
 const resultMessage = ref<ResultMessage>({
   type: "success",
   message: "",
 });
-
-const colorStore = useColorStore();
 
 const startDate = ref<Date>(new Date());
 const endDate = ref<EndDate>("No End Date");
@@ -248,7 +250,7 @@ onMounted(() => {
 });
 
 function setColorTheme(colorKey: string): void {
-  colorStore.setColor(colorKey);
+  currentColor.value = colorKey;
   if (habitData.value) {
     habitData.value.color = colorKey;
   }
@@ -259,7 +261,7 @@ const prepareHabitForSubmit = () => {
 
   return {
     ...habitData.value,
-    color: "blue-500",
+    color: currentColor.value,
     startDate: startDate.value.toISOString(),
     endDate:
       endDate.value === "No End Date" ? null : endDate.value.toISOString(),
