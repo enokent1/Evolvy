@@ -1,4 +1,6 @@
-const colorMap = {
+import { ColorData } from "@/types";
+
+const colorMap: Record<string, ColorData> = {
   "red-500": {
     name: "red",
     borderClass: "border-red-500",

@@ -1,4 +1,6 @@
-const iconMap = {
+import { IconData } from "@/types";
+
+const iconMap: Record<string, IconData> = {
   "icon-1": { icon: "🏃" },
   "icon-2": { icon: "🚶" },
   "icon-3": { icon: "🚴" },

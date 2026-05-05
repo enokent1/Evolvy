@@ -13,3 +13,14 @@ export type ResultMessage = {
   type: "success" | "error";
   message: string;
 };
+
+export interface ColorData {
+  name: string;
+  borderClass: string;
+  bgClass: string;
+  bgLightClass: string
+}
+
+export interface IconData {
+  icon: string
+}
